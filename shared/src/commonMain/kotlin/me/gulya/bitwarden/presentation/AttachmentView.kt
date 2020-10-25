@@ -1,0 +1,17 @@
+package me.gulya.bitwarden.presentation
+
+import me.gulya.bitwarden.domain.SymmetricCryptoKey
+
+data class AttachmentView(
+    val id: String?,
+    val url: String?,
+    val size: String?,
+    val sizeName: String?,
+    val key: SymmetricCryptoKey?,
+    val fileName: String?,
+) : View() {
+
+    val fileSize: Long by lazy {
+        size?.toLongOrNull() ?: 0
+    }
+}
