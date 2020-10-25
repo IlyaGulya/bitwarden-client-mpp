@@ -1,4 +1,4 @@
-package bit.core.utilities
+package me.gulya.bitwarden.utilities
 
 // ref: https://github.com/danesparza/domainname-parser
 class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?) {

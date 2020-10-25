@@ -1,4 +1,4 @@
-package bit.core.utilities
+package me.gulya.bitwarden.utilities
 
 val PUBLIC_SUFFIX_LIST by lazy {
     """

@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.presentation
 
-import bit.core.utilities.DomainName
+import me.gulya.bitwarden.utilities.DomainName
 import io.ktor.http.*
 import me.gulya.bitwarden.domain.LoginUri
 import me.gulya.bitwarden.enums.UriMatchType
