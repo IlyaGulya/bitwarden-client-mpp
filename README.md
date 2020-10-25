@@ -10,20 +10,20 @@ Bitwarden Multiplatform is a complete implementation of Bitwarden Password Manag
 Currently project is under development.
 
 ## Supported platforms
-- [] JVM (CLI)
-- [] Android
-- [] iOS
-- [] JVM (Desktop)
-- [] Web (Frontend)
-- [] Web (Extension)
+- [ ] JVM (CLI)
+- [ ] Android
+- [ ] iOS
+- [ ] JVM (Desktop)
+- [ ] Web (Frontend)
+- [ ] Web (Extension)
 
 ## Goals
-- [] Auth 
-- [] Vault API
-- [] Attachments
-- [] Authenticators and U2F support
-- [] YubiKey and Duo support
-- [] Organizations support 
+- [ ] Auth 
+- [ ] Vault API
+- [ ] Attachments
+- [ ] Authenticators and U2F support
+- [ ] YubiKey and Duo support
+- [ ] Organizations support 
 
 ## Participants
 + Ilya Gulya (@ilyagulya)
