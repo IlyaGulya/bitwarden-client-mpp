@@ -13,6 +13,7 @@ import me.gulya.bitwarden.server.response.IdentityResponse
 class LoginInteractor(
     private val crypto: Crypto,
     private val api: BitwardenApi,
+    private val tokenStorage: TokenStorage,
     private val tokenInteractor: TokenInteractor,
 ) {
 
@@ -45,9 +46,10 @@ class LoginInteractor(
         when (val response = api.identityToken(tokenRequest, identityClientId)) {
             is IdentityResponse.Token -> {
                 val tokenResponse = response.identityTokenResponse
-                // TODO: Store tokens
-                println("Access token (encoded): ${tokenResponse.accessToken}")
-                println("Refresh token: ${tokenResponse.refreshToken}")
+                tokenStorage.saveTokens(
+                    accessToken = tokenResponse.accessToken,
+                    refreshToken = tokenResponse.refreshToken
+                )
 
                 val decodedToken = tokenInteractor.decode(tokenResponse.accessToken)
                 println("Access token (decoded): $decodedToken")
