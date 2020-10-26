@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.server.request
 
-import me.gulya.bitwarden.domain.Folder
+import me.gulya.bitwarden.domain.data.Folder
 
 class FolderRequest(
     val name: String?

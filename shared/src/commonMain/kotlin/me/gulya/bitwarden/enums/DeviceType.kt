@@ -1,5 +1,9 @@
 package me.gulya.bitwarden.enums
 
+import kotlinx.serialization.Serializable
+import me.gulya.bitwarden.utilities.serialization.ByteEnumTypeSerializer
+
+@Serializable(with = DeviceTypeSerializer::class)
 enum class DeviceType(
     override val value: Byte,
 ) : Valued<Byte> {
@@ -29,3 +33,7 @@ enum class DeviceType(
         fun forValue(value: Byte) = values().findValue(value)
     }
 }
+
+class DeviceTypeSerializer : ByteEnumTypeSerializer<DeviceType>(
+    valueFactory = DeviceType.Companion::forValue
+)

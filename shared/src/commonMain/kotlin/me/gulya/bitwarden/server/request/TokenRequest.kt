@@ -42,7 +42,7 @@ class TokenRequest constructor(
         }
     }
 
-    fun ToIdentityToken(clientId: String): Map<String, String> {
+    fun toIdentityToken(clientId: String): Map<String, String> {
         val obj: MutableMap<String, String> = mutableMapOf(
             "scope" to "api offline_access",
             "client_id" to clientId,
@@ -66,10 +66,12 @@ class TokenRequest constructor(
         if (device != null) {
             obj += mapOf(
                 "deviceType" to (device.type.value).toString(),
-                "deviceIdentifier" to device.identifier!!,
-                "deviceName" to device.name!!,
-                "devicePushToken" to device.pushToken!!,
+                "deviceIdentifier" to device.identifier,
+                "deviceName" to device.name,
             )
+            if (device.pushToken != null) {
+                obj += "devicePushToken" to device.pushToken
+            }
         }
         if (!token.isNullOrBlank() && provider != null && remember != null) {
             obj += mapOf(

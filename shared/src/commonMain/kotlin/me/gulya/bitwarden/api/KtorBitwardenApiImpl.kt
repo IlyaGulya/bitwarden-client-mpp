@@ -1,33 +1,14 @@
 package me.gulya.bitwarden.api
 
 import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import me.gulya.bitwarden.domain.EnvironmentUrls
-import me.gulya.bitwarden.server.request.CipherCollectionsRequest
-import me.gulya.bitwarden.server.request.CipherCreateRequest
-import me.gulya.bitwarden.server.request.CipherRequest
-import me.gulya.bitwarden.server.request.CipherShareRequest
-import me.gulya.bitwarden.server.request.DeviceTokenRequest
-import me.gulya.bitwarden.server.request.EventRequest
-import me.gulya.bitwarden.server.request.FolderRequest
-import me.gulya.bitwarden.server.request.KeysRequest
-import me.gulya.bitwarden.server.request.PasswordHintRequest
-import me.gulya.bitwarden.server.request.PasswordVerificationRequest
-import me.gulya.bitwarden.server.request.PreloginRequest
-import me.gulya.bitwarden.server.request.RegisterRequest
-import me.gulya.bitwarden.server.request.SetPasswordRequest
-import me.gulya.bitwarden.server.request.TokenRequest
-import me.gulya.bitwarden.server.request.TwoFactorEmailRequest
-import me.gulya.bitwarden.server.response.BreachAccountResponse
-import me.gulya.bitwarden.server.response.CipherResponse
-import me.gulya.bitwarden.server.response.FolderResponse
-import me.gulya.bitwarden.server.response.IdentityTokenResponse
-import me.gulya.bitwarden.server.response.IdentityTwoFactorResponse
-import me.gulya.bitwarden.server.response.PreloginResponse
-import me.gulya.bitwarden.server.response.ProfileResponse
-import me.gulya.bitwarden.server.response.SyncResponse
+import me.gulya.bitwarden.domain.data.EnvironmentUrls
+import me.gulya.bitwarden.server.request.*
+import me.gulya.bitwarden.server.response.*
 
 class KtorBitwardenApiImpl(
     val client: HttpClient
@@ -44,6 +25,10 @@ class KtorBitwardenApiImpl(
             }
         return "$endpoint$realPath"
     }
+
+    private fun makeApiUrl(path: String) = makeUrl("/api$path")
+    private fun makeIdentityUrl(path: String) = makeUrl("/identity$path")
+    private fun makeEventsUrl(path: String) = makeUrl("/events$path")
 
     override suspend fun deleteCipher(id: String) {
         TODO("Not yet implemented")
@@ -91,10 +76,9 @@ class KtorBitwardenApiImpl(
 
     override suspend fun verifyAccountPassword(request: PasswordVerificationRequest) {
         client.post<Unit> {
-            url {
-                takeFrom(makeUrl("/accounts/verify-password"))
-                body = request
-            }
+            url.takeFrom(makeApiUrl("/accounts/verify-password"))
+            jsonBody()
+            body = request
         }
     }
 
@@ -110,8 +94,30 @@ class KtorBitwardenApiImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun postIdentityToken(request: TokenRequest): Pair<IdentityTokenResponse, IdentityTwoFactorResponse> {
-        TODO("Not yet implemented")
+    override suspend fun identityToken(request: TokenRequest, identityClientId: String): IdentityResponse {
+        val formParts =
+            request
+                .toIdentityToken(identityClientId)
+                .map { (key, value) -> FormPart(key, value) }
+                .toTypedArray()
+        return try {
+            val response = client.post<IdentityTokenResponse>() {
+                url.takeFrom(makeIdentityUrl("/connect/token"))
+                accept(ContentType.Application.Json)
+                body = FormDataContent(Parameters.build {
+                    request
+                        .toIdentityToken(identityClientId)
+                        .forEach { (key, value) -> append(key, value) }
+                })
+            }
+            IdentityResponse.Token(response)
+        } catch (e: ClientRequestException) {
+            if (e.response.status == HttpStatusCode.BadRequest) {
+                IdentityResponse.TwoFactor(e.response.receive())
+            } else {
+                throw e
+            }
+        }
     }
 
     override suspend fun postPasswordHint(request: PasswordHintRequest) {
@@ -122,8 +128,12 @@ class KtorBitwardenApiImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun postPrelogin(request: PreloginRequest): PreloginResponse {
-        TODO("Not yet implemented")
+    override suspend fun prelogin(request: PreloginRequest): PreloginResponse {
+        return client.post {
+            url.takeFrom(makeApiUrl("/accounts/prelogin"))
+            jsonBody()
+            body = request
+        }
     }
 
     override suspend fun postRegister(request: RegisterRequest) {
@@ -193,5 +203,9 @@ class KtorBitwardenApiImpl(
 
     override suspend fun postEventsCollect(request: Iterable<EventRequest>) {
         TODO("Not yet implemented")
+    }
+
+    private fun HttpRequestBuilder.jsonBody() {
+        header(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 }

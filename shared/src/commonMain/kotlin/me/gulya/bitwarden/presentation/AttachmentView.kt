@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.presentation
 
-import me.gulya.bitwarden.domain.SymmetricCryptoKey
+import me.gulya.bitwarden.domain.data.SymmetricCryptoKey
 
 data class AttachmentView(
     val id: String?,

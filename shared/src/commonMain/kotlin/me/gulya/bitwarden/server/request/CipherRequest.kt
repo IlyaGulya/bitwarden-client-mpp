@@ -1,7 +1,7 @@
 package me.gulya.bitwarden.server.request
 
-import me.gulya.bitwarden.domain.Cipher
-import me.gulya.bitwarden.domain.ifType
+import me.gulya.bitwarden.domain.data.Cipher
+import me.gulya.bitwarden.domain.data.ifType
 import me.gulya.bitwarden.enums.CipherType
 import me.gulya.bitwarden.server.SecureNoteApi
 import me.gulya.bitwarden.server.ServerCard

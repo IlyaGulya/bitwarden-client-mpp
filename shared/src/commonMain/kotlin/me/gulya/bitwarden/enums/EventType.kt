@@ -1,5 +1,10 @@
 package me.gulya.bitwarden.enums
 
+import kotlinx.serialization.Serializable
+import me.gulya.bitwarden.utilities.serialization.ByteEnumTypeSerializer
+import me.gulya.bitwarden.utilities.serialization.IntegerEnumTypeSerializer
+
+@Serializable(with = EventTypeSerializer::class)
 enum class EventType(
     override val value: Int,
 ): Valued<Int> {
@@ -46,3 +51,7 @@ enum class EventType(
         fun forValue(value: Int) = values().findValue(value)
     }
 }
+
+class EventTypeSerializer : IntegerEnumTypeSerializer<EventType>(
+    valueFactory = EventType.Companion::forValue
+)

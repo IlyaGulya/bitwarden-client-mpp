@@ -1,9 +1,9 @@
 package me.gulya.bitwarden.presentation
 
-import me.gulya.bitwarden.utilities.DomainName
 import io.ktor.http.*
-import me.gulya.bitwarden.domain.LoginUri
+import me.gulya.bitwarden.domain.data.LoginUri
 import me.gulya.bitwarden.enums.UriMatchType
+import me.gulya.bitwarden.utilities.DomainName
 
 val TLD_ENDING_REGEX = ".*\\.(com|net|org|edu|uk|gov|ca|de|jp|fr|au|ru|ch|io|es|us|co|xyz|info|ly|mil)$".toRegex()
 val IP_REGEX = ("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
@@ -11,12 +11,12 @@ val IP_REGEX = ("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
         "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
         "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$").toRegex()
 
-data class LoginUriView(
-    private var _uri: String? = null,
-    private var _domain: String? = null,
-    private var _host: String? = null,
-    private var _canLaunch: Boolean? = null,
-) : View() {
+class LoginUriView(u: LoginUri) : View() {
+    private var _uri: String? = null
+    private var _domain: String? = null
+    private var _host: String? = null
+    private var _canLaunch: Boolean? = null
+
     companion object {
 
         private val CAN_LAUNCH_WHITE_LIST = listOf(
@@ -33,10 +33,6 @@ data class LoginUriView(
         ).toHashSet()
     }
 
-
-    constructor(u: LoginUri) {
-        match = u.match
-    }
 
     var match: UriMatchType? = null
     var uri: String?
@@ -58,7 +54,7 @@ data class LoginUriView(
         }
     val host: String?
         get() {
-            if (match === UriMatchType.RegularExpression) {
+            if (match === UriMatchType.REGULAR_EXPRESSION) {
                 return null
             }
             if (_host == null && uri != null) {
@@ -80,7 +76,7 @@ data class LoginUriView(
     val canLaunch: Boolean
         get() {
             return _canLaunch ?: {
-                if (uri != null && match !== UriMatchType.RegularExpression) {
+                if (uri != null && match !== UriMatchType.REGULAR_EXPRESSION) {
                     val uri = launchUri
                     CAN_LAUNCH_WHITE_LIST.any { prefix -> uri?.startsWith(prefix) == true }.also { canLaunch ->
                         _canLaunch = canLaunch
@@ -102,6 +98,10 @@ data class LoginUriView(
                 null
             }
         }
+
+    init {
+        match = u.match
+    }
 }
 
 fun String?.toUriOrNull() = getUri(this)

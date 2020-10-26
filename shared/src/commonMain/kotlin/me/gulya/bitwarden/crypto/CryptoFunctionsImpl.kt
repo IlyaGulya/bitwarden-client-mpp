@@ -11,7 +11,7 @@ class CryptoFunctionsImpl(
         hashAlgorithm: CryptoHashAlgorithm,
         iterations: Int
     ): ByteArray {
-        if (hashAlgorithm != CryptoHashAlgorithm.Sha256 && hashAlgorithm != CryptoHashAlgorithm.Sha512) {
+        if (hashAlgorithm != CryptoHashAlgorithm.SHA256 && hashAlgorithm != CryptoHashAlgorithm.SHA512) {
             throw IllegalArgumentException("Unsupported PBKDF2 algorithm: $hashAlgorithm")
         }
 

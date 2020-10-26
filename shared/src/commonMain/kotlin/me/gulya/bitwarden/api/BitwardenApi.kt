@@ -1,7 +1,7 @@
 package me.gulya.bitwarden.api
 
 import io.ktor.client.request.forms.*
-import me.gulya.bitwarden.domain.EnvironmentUrls
+import me.gulya.bitwarden.domain.data.EnvironmentUrls
 import me.gulya.bitwarden.server.request.CipherCollectionsRequest
 import me.gulya.bitwarden.server.request.CipherCreateRequest
 import me.gulya.bitwarden.server.request.CipherRequest
@@ -20,8 +20,8 @@ import me.gulya.bitwarden.server.request.TwoFactorEmailRequest
 import me.gulya.bitwarden.server.response.BreachAccountResponse
 import me.gulya.bitwarden.server.response.CipherResponse
 import me.gulya.bitwarden.server.response.FolderResponse
+import me.gulya.bitwarden.server.response.IdentityResponse
 import me.gulya.bitwarden.server.response.IdentityTokenResponse
-import me.gulya.bitwarden.server.response.IdentityTwoFactorResponse
 import me.gulya.bitwarden.server.response.PreloginResponse
 import me.gulya.bitwarden.server.response.ProfileResponse
 import me.gulya.bitwarden.server.response.SyncResponse
@@ -43,10 +43,10 @@ interface BitwardenApi {
     suspend fun postCipher(request: CipherRequest): CipherResponse
     suspend fun postCipherCreate(request: CipherCreateRequest): CipherResponse
     suspend fun postFolder(request: FolderRequest): FolderResponse
-    suspend fun postIdentityToken(request: TokenRequest): Pair<IdentityTokenResponse, IdentityTwoFactorResponse>
+    suspend fun identityToken(request: TokenRequest, identityClientId: String): IdentityResponse
     suspend fun postPasswordHint(request: PasswordHintRequest)
     suspend fun setPassword(request: SetPasswordRequest)
-    suspend fun postPrelogin(request: PreloginRequest): PreloginResponse
+    suspend fun prelogin(request: PreloginRequest): PreloginResponse
     suspend fun postRegister(request: RegisterRequest)
     suspend fun putCipher(id: String?, request: CipherRequest): CipherResponse
     suspend fun putCipherCollections(id: String, request: CipherCollectionsRequest)

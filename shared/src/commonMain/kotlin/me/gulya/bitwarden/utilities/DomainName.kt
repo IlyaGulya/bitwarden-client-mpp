@@ -1,5 +1,7 @@
 package me.gulya.bitwarden.utilities
 
+expect fun publicSuffixList(): List<String>
+
 // ref: https://github.com/danesparza/domainname-parser
 class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?) {
     private var subDomain = ""
@@ -29,21 +31,11 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
 
     class TLDRule(ruleInfo: String) : Comparable<TLDRule> {
         var name: String? = null
-        fun getName(): String? {
-            return name
-        }
 
-        private var Type = RuleType.values()[0]
-        fun getType(): RuleType {
-            return Type
-        }
-
-        private fun setType(value: RuleType) {
-            Type = value
-        }
+        var type = RuleType.values()[0]
 
         override operator fun compareTo(other: TLDRule): Int {
-            return getName()!!.compareTo(other.getName()!!)
+            return name!!.compareTo(other.name!!)
         }
 
         enum class RuleType {
@@ -58,15 +50,19 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
 
         init {
             //  Parse the rule and set properties accordingly:
-            if (ruleInfo.startsWith("*")) {
-                setType(RuleType.Wildcard)
-                name = ruleInfo.substring(2)
-            } else if (ruleInfo.startsWith("!")) {
-                setType(RuleType.Exception)
-                name = ruleInfo.substring(1)
-            } else {
-                setType(RuleType.Normal)
-                name = ruleInfo
+            when {
+                ruleInfo.startsWith("*") -> {
+                    type = RuleType.Wildcard
+                    name = ruleInfo.substring(2)
+                }
+                ruleInfo.startsWith("!") -> {
+                    type = RuleType.Exception
+                    name = ruleInfo.substring(1)
+                }
+                else -> {
+                    type = RuleType.Normal
+                    name = ruleInfo
+                }
             }
         }
     }
@@ -81,11 +77,11 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
 //            if (CoreHelpers.InDebugMode()) {
 //                Debug.WriteLine(java.lang.String.format("Loaded %1\$s rules into cache.", results.values.Sum { r -> r.Values.Count }))
 //            }
-            return PUBLIC_SUFFIX_LIST
+            return publicSuffixList()
                 //  Strip out comments and blank lines
                 .filter { ruleString -> !ruleString.startsWith("//") && ruleString.isNotBlank() }
                 .map { TLDRule(it) }
-                .groupBy { it.getType() }
+                .groupBy { it.type }
                 .mapValues { (_, value) ->
                     value.associateBy { it.name ?: "" }
                 }
@@ -161,15 +157,15 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
             //  Based on the tld rule found, get the domain (and possibly the subdomain)
             var tempSudomainAndDomain = ""
             var tldIndex: Int
-            when (matchingRule.getType()) {
+            when (matchingRule.type) {
                 TLDRule.RuleType.Normal -> {
-                    tldIndex = domainString.lastIndexOf("." + matchingRule.getName())
+                    tldIndex = domainString.lastIndexOf("." + matchingRule.name)
                     tempSudomainAndDomain = domainString.substring(0, tldIndex)
                     tld = domainString.substring(tldIndex + 1)
                 }
                 TLDRule.RuleType.Wildcard -> {
                     //  This finds the last portion of the TLD...
-                    tldIndex = domainString.lastIndexOf("." + matchingRule.getName())
+                    tldIndex = domainString.lastIndexOf("." + matchingRule.name)
                     tempSudomainAndDomain = domainString.substring(0, tldIndex)
 
                     //  But we need to find the wildcard portion of it:
@@ -242,7 +238,7 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
             }
 
             //  Sort our matches list (longest rule wins, according to :
-            val results = ruleMatches.sortedBy { it.getName()?.length }
+            val results = ruleMatches.sortedBy { it.name?.length }
 
             //  Take the top result (our primary match):
             val primaryMatch = results.firstOrNull()

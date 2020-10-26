@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.presentation
 
-import me.gulya.bitwarden.domain.Field
+import me.gulya.bitwarden.domain.data.Field
 import me.gulya.bitwarden.enums.FieldType
 
 class FieldView(

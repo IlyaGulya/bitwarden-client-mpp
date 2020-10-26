@@ -1,5 +1,9 @@
 package me.gulya.bitwarden.enums
 
+import kotlinx.serialization.Serializable
+import me.gulya.bitwarden.utilities.serialization.ByteEnumTypeSerializer
+
+@Serializable(with = CipherTypeSerializer::class)
 enum class CipherType(
     override val value: Byte,
 ) : Valued<Byte> {
@@ -15,3 +19,7 @@ enum class CipherType(
     }
 
 }
+
+class CipherTypeSerializer : ByteEnumTypeSerializer<CipherType>(
+    valueFactory = CipherType.Companion::forValue
+)

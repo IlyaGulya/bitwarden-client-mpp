@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.presentation
 
-import me.gulya.bitwarden.domain.ITreeNodeObject
+import me.gulya.bitwarden.domain.data.ITreeNodeObject
 
 data class CollectionView(
     override val id: String?,

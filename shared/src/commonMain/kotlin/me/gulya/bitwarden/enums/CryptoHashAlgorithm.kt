@@ -1,15 +1,23 @@
 package me.gulya.bitwarden.enums
 
+import kotlinx.serialization.Serializable
+import me.gulya.bitwarden.utilities.serialization.ByteEnumTypeSerializer
+
+@Serializable(with = CryptoHashAlgorithmSerializer::class)
 enum class CryptoHashAlgorithm(
     override val value: Byte,
 ): Valued<Byte> {
-    Sha1(0),
-    Sha256(1),
-    Sha512(2),
-    Md5(3);
+    SHA1(0),
+    SHA256(1),
+    SHA512(2),
+    MD5(3);
 
     companion object {
         fun forValue(value: Byte) = values().findValue(value)
     }
 
 }
+
+class CryptoHashAlgorithmSerializer : ByteEnumTypeSerializer<CryptoHashAlgorithm>(
+    valueFactory = CryptoHashAlgorithm.Companion::forValue
+)

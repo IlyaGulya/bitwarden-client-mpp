@@ -1,8 +1,8 @@
 package me.gulya.bitwarden.presentation
 
 import com.soywiz.klock.DateTime
-import me.gulya.bitwarden.domain.Folder
-import me.gulya.bitwarden.domain.ITreeNodeObject
+import me.gulya.bitwarden.domain.data.Folder
+import me.gulya.bitwarden.domain.data.ITreeNodeObject
 
 class FolderView(
     override val id: String?,

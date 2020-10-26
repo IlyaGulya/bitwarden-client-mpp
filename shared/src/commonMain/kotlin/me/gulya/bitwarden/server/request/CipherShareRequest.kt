@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.server.request
 
-import me.gulya.bitwarden.domain.Cipher
+import me.gulya.bitwarden.domain.data.Cipher
 
 class CipherShareRequest(
     var cipher: CipherRequest,
