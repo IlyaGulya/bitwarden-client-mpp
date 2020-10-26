@@ -7,6 +7,9 @@ import kotlin.system.exitProcess
 class BitwardenCli : CliktCommand() {
 
     override fun run() {
+        val endpointUrl = System.getenv("ENDPOINT_URL") ?: prompt(
+            text = "Enter endpoint URL (empty for https://vault.bitwarden.com)"
+        ) ?: "https://valut.bitwarden.com"
         val email = System.getenv("EMAIL") ?: prompt(
             text = "Enter email"
         )
@@ -22,7 +25,7 @@ class BitwardenCli : CliktCommand() {
             throw IllegalArgumentException("Please enter password")
         }
 
-        val sdk = BitwardenSdk(OkHttp)
+        val sdk = BitwardenSdk(OkHttp, endpointUrl)
 
         runBlocking {
             sdk.login(email, password)

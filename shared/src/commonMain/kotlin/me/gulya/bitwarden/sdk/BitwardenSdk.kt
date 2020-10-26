@@ -16,6 +16,7 @@ import me.gulya.bitwarden.domain.login.TokenInteractor
 
 class BitwardenSdk(
     httpClientEngineFactory: HttpClientEngineFactory<*>,
+    endpointUrl: String,
 ) {
 
     private val json = Json {
@@ -38,7 +39,7 @@ class BitwardenSdk(
             )
         }
     }
-    val api: BitwardenApi = KtorBitwardenApiImpl(client)
+    val api: BitwardenApi = KtorBitwardenApiImpl(client, endpointUrl)
 
     private val cryptoPrimitives: CryptoPrimitives = CryptoPrimitives()
     private val cryptoFunctions: CryptoFunctions = CryptoFunctionsImpl(cryptoPrimitives)
