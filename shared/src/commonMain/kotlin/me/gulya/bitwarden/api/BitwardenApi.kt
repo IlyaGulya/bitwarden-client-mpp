@@ -37,7 +37,7 @@ interface BitwardenApi {
     suspend fun getCipher(id: String): CipherResponse
     suspend fun getFolder(id: String): FolderResponse
     suspend fun getProfile(): ProfileResponse
-    suspend fun getSync(): SyncResponse
+    suspend fun sync(): SyncResponse
     suspend fun postAccountKeys(request: KeysRequest)
     suspend fun verifyAccountPassword(request: PasswordVerificationRequest)
     suspend fun postCipher(request: CipherRequest): CipherResponse

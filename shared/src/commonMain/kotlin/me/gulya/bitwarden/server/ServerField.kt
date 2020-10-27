@@ -1,9 +1,12 @@
 package me.gulya.bitwarden.server
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import me.gulya.bitwarden.enums.FieldType
 
+@Serializable
 data class ServerField(
-    val type: FieldType,
-    val name: String?,
-    val value: String?,
+    @SerialName("Type") val type: FieldType,
+    @SerialName("Name") val name: String?,
+    @SerialName("Value") val value: String?,
 )

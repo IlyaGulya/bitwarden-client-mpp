@@ -16,7 +16,7 @@ class BitwardenCli : CliktCommand() {
         if (email.isNullOrBlank()) {
             throw IllegalArgumentException("Please enter email")
         }
-        val password = prompt(
+        val password = System.getenv("PASSWORD") ?: prompt(
             text = "Enter $email password",
             hideInput = true,
         )
@@ -29,6 +29,8 @@ class BitwardenCli : CliktCommand() {
 
         runBlocking {
             sdk.login(email, password)
+
+            println(sdk.sync())
         }
 
         exitProcess(0)

@@ -1,16 +1,20 @@
 package me.gulya.bitwarden.server.response
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ProfileResponse(
-    val id: String?,
-    val name: String?,
-    val email: String?,
-    val emailVerified: Boolean,
-    val premium: Boolean,
-    val masterPasswordHint: String?,
-    val culture: String?,
-    var twoFactorEnabled: Boolean,
-    val key: String?,
-    val privateKey: String?,
-    val securityStamp: String?,
-    val organizations: List<ProfileOrganizationResponse>?,
+    @SerialName("Id") val id: String?,
+    @SerialName("Name") val name: String?,
+    @SerialName("Email") val email: String?,
+    @SerialName("EmailVerified") val emailVerified: Boolean,
+    @SerialName("Premium") val premium: Boolean,
+    @SerialName("MasterPasswordHint") val masterPasswordHint: String?,
+    @SerialName("Culture") val culture: String?,
+    @SerialName("TwoFactorEnabled") var twoFactorEnabled: Boolean,
+    @SerialName("Key") val key: String?,
+    @SerialName("PrivateKey") val privateKey: String?,
+    @SerialName("SecurityStamp") val securityStamp: String?,
+    @SerialName("Organizations") val organizations: List<ProfileOrganizationResponse>?,
 )

@@ -51,7 +51,7 @@ class LoginInteractor(
                     refreshToken = tokenResponse.refreshToken
                 )
 
-                val decodedToken = tokenInteractor.decode(tokenResponse.accessToken)
+                val decodedToken = tokenInteractor.accessToken()
                 println("Access token (decoded): $decodedToken")
 
                 return AuthResult(

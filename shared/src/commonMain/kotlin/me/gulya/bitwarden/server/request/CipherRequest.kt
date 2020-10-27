@@ -9,6 +9,7 @@ import me.gulya.bitwarden.server.ServerField
 import me.gulya.bitwarden.server.ServerIdentity
 import me.gulya.bitwarden.server.ServerLogin
 import me.gulya.bitwarden.server.ServerLoginUri
+import me.gulya.bitwarden.server.response.DateTimeContainer
 
 class CipherRequest(
     var type: CipherType,
@@ -42,7 +43,7 @@ class CipherRequest(
                 ServerLogin(
                     username = username?.encryptedString,
                     password = password?.encryptedString,
-                    passwordRevisionDate = passwordRevisionDate,
+                    passwordRevisionDate = passwordRevisionDate?.let { DateTimeContainer(passwordRevisionDate) },
                     totp = totp?.encryptedString,
                     uris = uris.map { loginUri ->
                         ServerLoginUri(

@@ -7,12 +7,14 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import me.gulya.bitwarden.domain.data.EnvironmentUrls
+import me.gulya.bitwarden.domain.login.TokenInteractor
 import me.gulya.bitwarden.server.request.*
 import me.gulya.bitwarden.server.response.*
 
 class KtorBitwardenApiImpl(
     private val client: HttpClient,
     private val endpointUrl: String,
+    private val tokenInteractor: TokenInteractor,
 ) : BitwardenApi {
 
     private fun makeUrl(path: String): String {
@@ -65,8 +67,11 @@ class KtorBitwardenApiImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getSync(): SyncResponse {
-        TODO("Not yet implemented")
+    override suspend fun sync(): SyncResponse {
+        return client.get {
+            url.takeFrom(makeApiUrl("/sync"))
+            auth()
+        }
     }
 
     override suspend fun postAccountKeys(request: KeysRequest) {
@@ -202,6 +207,15 @@ class KtorBitwardenApiImpl(
 
     override suspend fun postEventsCollect(request: Iterable<EventRequest>) {
         TODO("Not yet implemented")
+    }
+
+    private fun HttpRequestBuilder.auth() {
+        val token = tokenInteractor.rawAccessToken()
+        if (token != null) {
+            header("Authorization", "Bearer $token")
+        } else {
+            throw IllegalStateException("Attempt to perform authorized request without access token!")
+        }
     }
 
     private fun HttpRequestBuilder.jsonBody() {

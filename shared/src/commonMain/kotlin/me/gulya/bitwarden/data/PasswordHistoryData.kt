@@ -9,6 +9,6 @@ data class PasswordHistoryData(
 ) {
     constructor(data: PasswordHistoryResponse): this(
         password = data.password,
-        lastUsedDate = data.lastUsedDate,
+        lastUsedDate = data.lastUsedDate.dateTime,
     )
 }

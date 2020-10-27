@@ -37,7 +37,7 @@ class CipherData(
         viewPassword = response.viewPassword,
         organizationUseTotp = response.organizationUseTotp,
         favorite = response.favorite,
-        revisionDate = response.revisionDate,
+        revisionDate = response.revisionDate.dateTime,
         type = response.type,
         name = response.name,
         notes = response.notes,
@@ -46,10 +46,10 @@ class CipherData(
         secureNote = response.ifType(CipherType.SecureNote) { secureNote?.let { SecureNoteData(secureNote) } },
         card = response.ifType(CipherType.Card) { card?.let { CardData(card) } },
         identity = response.ifType(CipherType.Identity) { identity?.let { IdentityData(identity) } },
-        fields = response.fields.map { FieldData(it) },
-        attachments = response.attachments.map { AttachmentData(it) },
-        passwordHistory = response.passwordHistory.map { PasswordHistoryData(it) },
-        deletedDate = response.deletedDate,
+        fields = (response.fields ?: emptyList()).map { FieldData(it) },
+        attachments = (response.attachments ?: emptyList()).map { AttachmentData(it) },
+        passwordHistory = (response.passwordHistory ?: emptyList()).map { PasswordHistoryData(it) },
+        deletedDate = response.deletedDate?.dateTime,
     )
 }
 

@@ -1,10 +1,14 @@
 package me.gulya.bitwarden.server.response
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class AttachmentResponse(
-    val id: String,
-    val url: String?,
-    val fileName: String,
-    val key: String,
-    val size: String?,
-    val sizeName: String?,
+    @SerialName("Id") val id: String,
+    @SerialName("Url") val url: String?,
+    @SerialName("FileName") val fileName: String,
+    @SerialName("Key") val key: String,
+    @SerialName("Size") val size: String?,
+    @SerialName("SizeName") val sizeName: String?,
 )

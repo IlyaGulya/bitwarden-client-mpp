@@ -1,9 +1,13 @@
 package me.gulya.bitwarden.server.response
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CollectionDetailsResponse(
-    val id: String?,
-    val organizationId: String?,
-    val name: String?,
-    val externalId: String?,
-    var readOnly: Boolean,
+    @SerialName("Id") val id: String?,
+    @SerialName("OrganizationId") val organizationId: String?,
+    @SerialName("Name") val name: String?,
+    @SerialName("ExternalId") val externalId: String?,
+    @SerialName("ReadOnly") var readOnly: Boolean,
 )

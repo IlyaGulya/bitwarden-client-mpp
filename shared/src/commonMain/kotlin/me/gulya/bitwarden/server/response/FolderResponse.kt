@@ -1,9 +1,11 @@
 package me.gulya.bitwarden.server.response
 
-import com.soywiz.klock.DateTime
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class FolderResponse(
-    val id: String,
-    val name: String,
-    val revisionDate: DateTime
+    @SerialName("Id") val id: String,
+    @SerialName("Name") val name: String,
+    @SerialName("RevisionDate") val revisionDate: DateTimeContainer,
 )

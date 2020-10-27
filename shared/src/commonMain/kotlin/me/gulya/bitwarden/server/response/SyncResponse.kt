@@ -1,10 +1,14 @@
 package me.gulya.bitwarden.server.response
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class SyncResponse(
-    val profile: ProfileResponse?,
-    val folders: List<FolderResponse>,
-    val collections: List<CollectionDetailsResponse>,
-    val ciphers: List<CipherResponse>,
-    val domains: DomainsResponse?,
-    val policies: List<PolicyResponse>,
+    @SerialName("Profile") val profile: ProfileResponse?,
+    @SerialName("Folders") val folders: List<FolderResponse>,
+    @SerialName("Collections") val collections: List<CollectionDetailsResponse>,
+    @SerialName("Ciphers") val ciphers: List<CipherResponse>,
+    @SerialName("Domains") val domains: DomainsResponse? = null,
+    @SerialName("Policies") val policies: List<PolicyResponse>,
 )

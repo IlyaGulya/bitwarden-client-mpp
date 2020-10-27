@@ -1,8 +1,10 @@
 package me.gulya.bitwarden.server.response
 
-import com.soywiz.klock.DateTime
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 class PasswordHistoryResponse(
-    val password: String,
-    val lastUsedDate: DateTime,
+    @SerialName("Password") val password: String,
+    @SerialName("LastUsedDate") val lastUsedDate: DateTimeContainer,
 )

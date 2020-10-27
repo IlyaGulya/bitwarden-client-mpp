@@ -1,7 +1,11 @@
 package me.gulya.bitwarden.server.response
 
-class GlobalDomainResponse(
-    val type: Int,
-    val domains: List<String>?,
-    val excluded: Boolean,
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class GlobalDomainResponse(
+    @SerialName("Type") val type: Int,
+    @SerialName("Domains") val domains: List<String>?,
+    @SerialName("Excluded") val excluded: Boolean,
 )

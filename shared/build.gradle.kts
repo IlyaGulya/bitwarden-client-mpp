@@ -16,7 +16,14 @@ repositories {
 }
 
 kotlin {
-    jvm()
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                kotlinOptions.jvmTarget = "1.8"
+                kotlinOptions.useIR = true
+            }
+        }
+    }
     sourceSets {
         val commonMain by getting {
             dependencies {

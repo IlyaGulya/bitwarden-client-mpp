@@ -1,18 +1,16 @@
 package me.gulya.bitwarden.domain.login
 
 import com.soywiz.klock.DateTime
-import com.soywiz.krypto.encoding.fromBase64
-import io.ktor.utils.io.core.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 
 class TokenInteractor(
-    val json: Json
+    private val json: Json,
+    private val tokenStorage: TokenStorage,
 ) {
-    fun decode(accessToken: String): DecodedAccessToken {
+    private fun decode(accessToken: String): DecodedAccessToken {
         val parts = accessToken.split(".")
         if (parts.size != 3) {
             throw IllegalArgumentException("JWT token must contain 3 parts")
@@ -20,6 +18,14 @@ class TokenInteractor(
 
         val tokenJson = parts[1].decodeBase64()?.utf8()
         return json.decodeFromString(DecodedAccessToken.serializer(), tokenJson!!)
+    }
+
+    fun accessToken(): DecodedAccessToken? {
+        return tokenStorage.getAccessToken()?.let(this::decode)
+    }
+
+    fun rawAccessToken(): String? {
+        return tokenStorage.getAccessToken()
     }
 
 }

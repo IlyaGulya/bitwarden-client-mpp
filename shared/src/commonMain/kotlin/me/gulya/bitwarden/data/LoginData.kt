@@ -13,7 +13,7 @@ data class LoginData(
     constructor(data: ServerLogin) : this(
         username = data.username,
         password = data.password,
-        passwordRevisionDate = data.passwordRevisionDate,
+        passwordRevisionDate = data.passwordRevisionDate?.dateTime,
         totp = data.totp,
         uris = data.uris.map { u -> LoginUriData(u) },
     )

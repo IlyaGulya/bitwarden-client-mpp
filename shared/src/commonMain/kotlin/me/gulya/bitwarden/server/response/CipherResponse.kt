@@ -1,34 +1,32 @@
 package me.gulya.bitwarden.server.response
 
-import com.soywiz.klock.DateTime
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import me.gulya.bitwarden.enums.CipherType
-import me.gulya.bitwarden.server.SecureNoteApi
-import me.gulya.bitwarden.server.ServerCard
-import me.gulya.bitwarden.server.ServerField
-import me.gulya.bitwarden.server.ServerIdentity
-import me.gulya.bitwarden.server.ServerLogin
+import me.gulya.bitwarden.server.*
 
+@Serializable
 data class CipherResponse(
-    val id: String?,
-    val organizationId: String?,
-    val folderId: String?,
-    val type: CipherType = CipherType.values()[0],
-    val name: String?,
-    val notes: String?,
-    val fields: List<ServerField>,
-    val login: ServerLogin?,
-    val card: ServerCard?,
-    val identity: ServerIdentity?,
-    val secureNote: SecureNoteApi?,
-    val favorite: Boolean = false,
-    val edit: Boolean = false,
-    val viewPassword: Boolean = true,
-    val organizationUseTotp: Boolean = false,
-    val revisionDate: DateTime = DateTime.EPOCH,
-    val attachments: List<AttachmentResponse>,
-    val passwordHistory: List<PasswordHistoryResponse>,
-    val collectionIds: List<String>,
-    val deletedDate: DateTime?,
+    @SerialName("Id") val id: String?,
+    @SerialName("OrganizationId") val organizationId: String?,
+    @SerialName("FolderId") val folderId: String?,
+    @SerialName("Type") val type: CipherType = CipherType.values()[0],
+    @SerialName("Name") val name: String?,
+    @SerialName("Notes") val notes: String?,
+    @SerialName("Fields") val fields: List<ServerField>? = null,
+    @SerialName("Login") val login: ServerLogin? = null,
+    @SerialName("Card") val card: ServerCard? = null,
+    @SerialName("Identity") val identity: ServerIdentity? = null,
+    @SerialName("SecureNote") val secureNote: SecureNoteApi? = null,
+    @SerialName("Favorite") val favorite: Boolean = false,
+    @SerialName("Edit") val edit: Boolean = false,
+    @SerialName("ViewPassword") val viewPassword: Boolean = true,
+    @SerialName("OrganizationUseTotp") val organizationUseTotp: Boolean = false,
+    @SerialName("RevisionDate") val revisionDate: DateTimeContainer = DateTimeContainer.EPOCH,
+    @SerialName("Attachments") val attachments: List<AttachmentResponse>? = null,
+    @SerialName("PasswordHistory") val passwordHistory: List<PasswordHistoryResponse>? = null,
+    @SerialName("CollectionIds") val collectionIds: List<String>,
+    @SerialName("DeletedDate") val deletedDate: DateTimeContainer?,
 )
 
 fun <T> CipherResponse.ifType(type: CipherType, getter: CipherResponse.() -> T): T? {

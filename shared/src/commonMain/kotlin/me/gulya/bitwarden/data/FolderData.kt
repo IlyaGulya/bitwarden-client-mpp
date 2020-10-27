@@ -13,6 +13,6 @@ data class FolderData(
         userId = userId,
         id = response.id,
         name = response.name,
-        revisionDate = response.revisionDate,
+        revisionDate = response.revisionDate.dateTime,
     )
 }
