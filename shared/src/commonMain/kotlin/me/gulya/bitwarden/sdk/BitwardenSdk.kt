@@ -1,22 +1,20 @@
 package me.gulya.bitwarden.sdk
 
-import com.soywiz.klock.DateTime
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
 import me.gulya.bitwarden.api.BitwardenApi
 import me.gulya.bitwarden.api.KtorBitwardenApiImpl
 import me.gulya.bitwarden.crypto.*
+import me.gulya.bitwarden.data.CipherData
 import me.gulya.bitwarden.domain.data.AuthResult
-import me.gulya.bitwarden.domain.login.InMemoryTokenStorage
-import me.gulya.bitwarden.domain.login.LoginInteractor
-import me.gulya.bitwarden.domain.login.SyncInteractor
-import me.gulya.bitwarden.domain.login.TokenInteractor
-import me.gulya.bitwarden.server.response.DateTimeContainerSerializer
+import me.gulya.bitwarden.domain.data.Cipher
+import me.gulya.bitwarden.domain.data.EncryptedString
+import me.gulya.bitwarden.domain.login.*
+import me.gulya.bitwarden.presentation.CipherView
 import me.gulya.bitwarden.server.response.SyncResponse
 
 class BitwardenSdk(
@@ -49,6 +47,7 @@ class BitwardenSdk(
     private val cryptoFunctions: CryptoFunctions = CryptoFunctionsImpl(cryptoPrimitives)
     private val crypto: Crypto = CryptoImpl(cryptoFunctions)
 
+    private val masterPasswordStorage = InMemoryKeyStorage()
     private val tokenStorage = InMemoryTokenStorage()
 
     private val tokenInteractor = TokenInteractor(json, tokenStorage)
@@ -60,6 +59,7 @@ class BitwardenSdk(
         api = api,
         tokenInteractor = tokenInteractor,
         tokenStorage = tokenStorage,
+        masterPasswordStorage = masterPasswordStorage,
     )
 
     private val syncInteractor = SyncInteractor(api, tokenInteractor)
@@ -72,4 +72,39 @@ class BitwardenSdk(
         return syncInteractor.sync()
     }
 
+    suspend fun syncAndDecodeCiphers(): List<CipherView> {
+        return sync().run {
+            ciphers.map {
+                Cipher(
+                    cipherData = CipherData(
+                        response = it,
+                        userId = tokenInteractor.accessToken()?.userId,
+                        collectionIds = it.collectionIds.toSet(),
+                    ),
+                    localData = emptyMap() // TODO: WTF
+                ).decrypt(orgId = null)
+            }
+
+        }
+    }
+
+}
+
+class EncryptionInteractor(
+    private val crypto: Crypto,
+    private val keyStorage: KeyStorage,
+) {
+    suspend fun decrypt(encryptedString: EncryptedString, orgId: String?) {
+        val key =
+            if (orgId != null) {
+                TODO("Organizations is not supported yet")
+            } else {
+                val encryptedEncryptionKey = keyStorage.encryptedEncryptionKey
+                if (encryptedEncryptionKey != null) {
+                    val key = crypto.
+                } else {
+                    throw IllegalStateException("Encryption key does not exist. We have no key to decrypt.")
+                }
+            }
+    }
 }

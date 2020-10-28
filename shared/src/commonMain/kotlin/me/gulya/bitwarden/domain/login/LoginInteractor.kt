@@ -15,6 +15,7 @@ class LoginInteractor(
     private val api: BitwardenApi,
     private val tokenStorage: TokenStorage,
     private val tokenInteractor: TokenInteractor,
+    private val keyStorage: KeyStorage,
 ) {
 
     suspend fun login(email: String, masterPassword: String): AuthResult {
@@ -53,6 +54,8 @@ class LoginInteractor(
 
                 val decodedToken = tokenInteractor.accessToken()
                 println("Access token (decoded): $decodedToken")
+
+                keyStorage.saveEncryptionKey(masterPassword)
 
                 return AuthResult(
                     twoFactor = false,
