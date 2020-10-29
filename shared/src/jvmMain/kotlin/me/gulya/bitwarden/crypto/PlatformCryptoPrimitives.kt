@@ -4,15 +4,14 @@ import me.gulya.bitwarden.enums.CryptoHashAlgorithm
 import org.bouncycastle.crypto.digests.SHA256Digest
 import org.bouncycastle.crypto.digests.SHA512Digest
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator
-import org.bouncycastle.crypto.generators.RSAKeyPairGenerator
 import org.bouncycastle.crypto.params.KeyParameter
-import org.bouncycastle.crypto.params.RSAKeyGenerationParameters
-import org.bouncycastle.crypto.util.PrivateKeyInfoFactory
 import java.security.KeyPairGenerator
-import java.security.spec.AlgorithmParameterSpec
-import javax.crypto.Cipher
+import java.security.SecureRandom
 
 actual object PlatformCryptoPrimitives {
+
+    val random = SecureRandom()
+
     actual fun pbkdf2(
         password: ByteArray,
         salt: ByteArray,
@@ -32,11 +31,18 @@ actual object PlatformCryptoPrimitives {
     }
 
     actual fun generateRsaOaepSha1KeyPair(length: RsaKeyLength): AsymmetricKeyPair {
-        val cipher = Cipher.getInstance("RSA/NONE/OAEPWithSHA1AndMGF1Padding")
-        cipher.ini
-        val keyGenerator = RSAKeyPairGenerator()
-        keyGenerator.ini
-        keyGenerator.initialize(RSAKeyGenerationParameters)
-        return PlatformCryptoPrimitives
+        val keyGenerator = KeyPairGenerator.getInstance("RSA")
+        keyGenerator.initialize(length.keyLength)
+        return keyGenerator.generateKeyPair().run {
+            AsymmetricKeyPair(
+                public = this.public.encoded,
+                private = this.private.encoded
+            )
+        }
     }
+
+    actual fun randomBytes(numBytes: Int): ByteArray {
+        return random.generateSeed(numBytes)
+    }
+
 }

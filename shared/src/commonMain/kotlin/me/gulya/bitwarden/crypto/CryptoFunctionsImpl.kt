@@ -1,5 +1,8 @@
 package me.gulya.bitwarden.crypto
 
+import com.soywiz.krypto.AES
+import com.soywiz.krypto.HMAC
+import com.soywiz.krypto.Padding
 import me.gulya.bitwarden.enums.CryptoHashAlgorithm
 
 class CryptoFunctionsImpl(
@@ -23,8 +26,25 @@ class CryptoFunctionsImpl(
         )
     }
 
-    override suspend fun generateRsaKeyPair(length: RsaKeyLength) {
-        val
+    override suspend fun generateRsaKeyPair(length: RsaKeyLength): AsymmetricKeyPair {
+        return primitives.generateRsaOaepSha1KeyPair(length)
+    }
+
+    override suspend fun randomBytes(numBytes: Int): ByteArray {
+        return primitives.randomBytes(numBytes)
+    }
+
+    override suspend fun encryptAes(value: ByteArray, initializationVector: ByteArray, encKey: ByteArray): ByteArray {
+        return AES.encryptAesCbc(value, encKey, initializationVector, Padding.PKCS7Padding)
+    }
+
+    override suspend fun hmac(macData: ByteArray, macKey: ByteArray, hashAlgorithm: CryptoHashAlgorithm): ByteArray {
+        return when(hashAlgorithm) {
+            CryptoHashAlgorithm.SHA1 -> HMAC.hmacSHA1(macKey, macData)
+            CryptoHashAlgorithm.SHA256 -> HMAC.hmacSHA256(macKey, macData)
+            CryptoHashAlgorithm.SHA512 -> TODO("HMAC for SHA512 is not supported yet")
+            else -> TODO("$hashAlgorithm is not supported for mac")
+        }.bytes
     }
 
 }

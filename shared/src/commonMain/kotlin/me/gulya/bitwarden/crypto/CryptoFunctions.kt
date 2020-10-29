@@ -46,6 +46,12 @@ interface CryptoFunctions {
         iterations: Int
     ): ByteArray
 
-    suspend fun generateRsaKeyPair(length: RsaKeyLength)
+    suspend fun generateRsaKeyPair(length: RsaKeyLength): AsymmetricKeyPair
+
+    suspend fun randomBytes(numBytes: Int): ByteArray
+
+    suspend fun encryptAes(value: ByteArray, initializationVector: ByteArray, encKey: ByteArray): ByteArray
+
+    suspend fun hmac(macData: ByteArray, macKey: ByteArray, shA256: CryptoHashAlgorithm): ByteArray
 
 }

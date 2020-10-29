@@ -7,34 +7,39 @@ import kotlin.jvm.JvmOverloads
 class EncryptedString {
     val encryptedString: String
     val encryptionType: EncryptionType
-    var iv: String? = null
+    var initializationVector: String? = null
     var data: String? = null
-    var mac: String? = null
+    var messageAuthCode: String? = null
 
 
     private var _decryptedValue: String? = null
 
     @JvmOverloads
-    constructor(encryptionType: EncryptionType, data: String, iv: String? = null, mac: String? = null) {
+    constructor(
+        encryptionType: EncryptionType,
+        data: String,
+        initializationVector: String? = null,
+        messageAuthCode: String? = null
+    ) {
         if (data.isBlank()) {
             throw IllegalArgumentException("Data is empty")
         }
         val encryptedString =
-            if (!iv.isNullOrBlank()) {
-                "${encryptionType.value}.$iv|$data"
+            if (!initializationVector.isNullOrBlank()) {
+                "${encryptionType.value}.$initializationVector|$data"
             } else {
                 "${encryptionType.value}.$data"
             }
         this.encryptedString =
-            if (!mac.isNullOrBlank()) {
-                "$encryptedString|$mac"
+            if (!messageAuthCode.isNullOrBlank()) {
+                "$encryptedString|$messageAuthCode"
             } else {
                 encryptedString
             }
         this.encryptionType = encryptionType
         this.data = data
-        this.iv = iv
-        this.mac = mac
+        this.initializationVector = initializationVector
+        this.messageAuthCode = messageAuthCode
     }
 
     constructor(encryptedString: String) {
@@ -56,14 +61,14 @@ class EncryptedString {
         when (encryptionType) {
             EncryptionType.AES_CBC128_HMAC_SHA256_BASE64, EncryptionType.AES_CBC256_HMAC_SHA256_BASE64 -> {
                 if (encPieces.size == 3) {
-                    this.iv = encPieces[0]
+                    this.initializationVector = encPieces[0]
                     this.data = encPieces[1]
-                    this.mac = encPieces[2]
+                    this.messageAuthCode = encPieces[2]
                 }
             }
             EncryptionType.AES_CBC256_B64 -> {
                 if (encPieces.size == 2) {
-                    this.iv = encPieces[0]
+                    this.initializationVector = encPieces[0]
                     this.data = encPieces[1]
                 }
             }
@@ -94,5 +99,6 @@ class EncryptedString {
     }
 }
 
-@JvmName("toCipherStringNullable") fun String?.toCipherString(): EncryptedString? = this?.let(::EncryptedString)
+@JvmName("toCipherStringNullable")
+fun String?.toCipherString(): EncryptedString? = this?.let(::EncryptedString)
 fun String.toCipherString() = EncryptedString(this)

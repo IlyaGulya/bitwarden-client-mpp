@@ -15,7 +15,12 @@ interface Crypto {
         iterations: Int
     ): SymmetricCryptoKey
 
-    suspend fun createKeyPair(): KeyPair
+    suspend fun encrypt(
+        value: ByteArray,
+        key: SymmetricCryptoKey
+    )
+
+    suspend fun createKeyPair(key: SymmetricCryptoKey): RsaKeyPair
 
 }
 

@@ -1,5 +1,7 @@
 package me.gulya.bitwarden.crypto
 
+import com.soywiz.krypto.AES
+import com.soywiz.krypto.Padding
 import me.gulya.bitwarden.enums.CryptoHashAlgorithm
 
 class CryptoPrimitives {
@@ -8,8 +10,13 @@ class CryptoPrimitives {
     }
 
     fun generateRsaOaepSha1KeyPair(length: RsaKeyLength): AsymmetricKeyPair {
-        return PlatformCryptoPrimitives
+        return PlatformCryptoPrimitives.generateRsaOaepSha1KeyPair(length)
     }
+
+    fun randomBytes(numBytes: Int): ByteArray {
+        return PlatformCryptoPrimitives.randomBytes(numBytes)
+    }
+
 }
 
 data class AsymmetricKeyPair(

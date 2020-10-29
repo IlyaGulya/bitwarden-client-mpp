@@ -2,7 +2,7 @@ package me.gulya.bitwarden.crypto
 
 import me.gulya.bitwarden.domain.data.EncryptedString
 
-data class KeyPair(
+data class RsaKeyPair(
     val publicKey: String,
-    val privateKey: EncryptedString
+    val privateKey: EncryptedString,
 )

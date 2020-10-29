@@ -68,7 +68,7 @@ class LoginInteractor(
                     } else {
                         // This user does not have a key pair yet (old account?), so we are generating it.
                         try {
-                            val keyPair = crypto.createKeyPair()
+                            val keyPair = crypto.createKeyPair(key)
                         } catch (ignore: Exception) {
 
                         }

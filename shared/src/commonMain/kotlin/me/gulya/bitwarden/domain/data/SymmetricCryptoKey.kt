@@ -2,14 +2,15 @@ package me.gulya.bitwarden.domain.data
 
 import com.soywiz.krypto.encoding.Base64
 import me.gulya.bitwarden.enums.EncryptionType
+import okio.ByteString.Companion.toByteString
 
 class SymmetricCryptoKey(
     val key: ByteArray,
     var keyB64: String,
     val encType: EncryptionType = EncryptionType.values()[0],
-    var encKey: ByteArray? = null,
-    var macKey: ByteArray? = null,
-    var encKeyB64: String? = null,
+    var encKey: ByteArray,
+    var macKey: ByteArray?,
+    var encKeyB64: String,
     var macKeyB64: String? = null
 ) {
 
@@ -37,11 +38,7 @@ class SymmetricCryptoKey(
             throw IllegalArgumentException("Unsupported encType/key length.")
         }
 
-        if (encKey != null) {
-            encKeyB64 = encKey?.let(Base64::encode)
-        }
-        if (macKey != null) {
-            macKeyB64 = macKey?.let(Base64::encode)
-        }
+        encKeyB64 = encKey.toByteString().base64()
+        macKeyB64 = macKey?.let(Base64::encode)
     }
 }
