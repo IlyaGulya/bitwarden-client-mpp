@@ -1,11 +1,49 @@
 package me.gulya.bitwarden.domain.login
 
-import me.gulya.bitwarden.domain.data.SymmetricCryptoKey
+import me.gulya.bitwarden.domain.data.crypto.EncryptedKey
+import me.gulya.bitwarden.domain.data.crypto.EncryptedPrivateKey
+import me.gulya.bitwarden.domain.data.crypto.MasterKeyHash
+import me.gulya.bitwarden.domain.data.crypto.OrganizationKey
 
 class InMemoryKeyStorage : KeyStorage {
+    private var masterKeyHash: MasterKeyHash? = null
+    private var encryptedKey: EncryptedKey? = null
+    private var encryptedPrivateKey: EncryptedPrivateKey? = null
+    private val organizationKeys = mutableMapOf<String, OrganizationKey>()
 
-    override var sessionKey: SymmetricCryptoKey?
+    override suspend fun saveMasterKeyHash(hash: MasterKeyHash) {
+        masterKeyHash = hash
+    }
 
-    override var encryptedEncryptionKey: SymmetricCryptoKey?
+    override suspend fun getMasterKeyHash(): MasterKeyHash? {
+        return masterKeyHash
+    }
+
+    override suspend fun saveEncryptedKey(key: EncryptedKey) {
+        encryptedKey = key
+    }
+
+    override suspend fun getEncryptedKey(): EncryptedKey? {
+        return encryptedKey
+    }
+
+    override suspend fun saveEncryptedPrivateKey(key: EncryptedPrivateKey) {
+        encryptedPrivateKey = key
+    }
+
+    override suspend fun getEncryptedPrivateKey(): EncryptedPrivateKey? {
+        return encryptedPrivateKey
+    }
+
+    override suspend fun saveOrganizationKeys(keys: List<OrganizationIdAndKey>) {
+        this.organizationKeys.clear()
+        this.organizationKeys.putAll(
+            keys.map { (id, key) -> id to key }
+        )
+    }
+
+    override suspend fun getOrganizationKey(organizationId: String): OrganizationKey? {
+        return organizationKeys[organizationId]
+    }
 
 }

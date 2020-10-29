@@ -46,4 +46,6 @@ interface CryptoFunctions {
         iterations: Int
     ): ByteArray
 
+    suspend fun generateRsaKeyPair(length: RsaKeyLength)
+
 }

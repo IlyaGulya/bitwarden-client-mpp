@@ -12,7 +12,7 @@ data class IdentityTokenResponse(
     @SerialName("token_type") val tokenType: String? = null,
     @SerialName("ResetMasterPassword") val resetMasterPassword: Boolean,
     @SerialName("PrivateKey") val privateKey: String? = null,
-    @SerialName("Key") val key: String? = null,
+    @SerialName("Key") val key: String,
     @SerialName("TwoFactorToken") val twoFactorToken: String? = null,
     @SerialName("Kdf") val kdf: KeyDerivationFunctionType,
     @SerialName("KdfIterations") val kdfIterations: Int,

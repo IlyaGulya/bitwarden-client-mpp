@@ -23,5 +23,8 @@ class CryptoFunctionsImpl(
         )
     }
 
+    override suspend fun generateRsaKeyPair(length: RsaKeyLength) {
+        val
+    }
 
 }

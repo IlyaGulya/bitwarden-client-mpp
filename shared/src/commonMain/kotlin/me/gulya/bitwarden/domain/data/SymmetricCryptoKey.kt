@@ -5,10 +5,10 @@ import me.gulya.bitwarden.enums.EncryptionType
 
 class SymmetricCryptoKey(
     val key: ByteArray,
+    var keyB64: String,
     val encType: EncryptionType = EncryptionType.values()[0],
     var encKey: ByteArray? = null,
     var macKey: ByteArray? = null,
-    var keyB64: String? = null,
     var encKeyB64: String? = null,
     var macKeyB64: String? = null
 ) {
@@ -20,6 +20,7 @@ class SymmetricCryptoKey(
             64 -> EncryptionType.AES_CBC256_HMAC_SHA256_BASE64
             else -> throw IllegalArgumentException("Unable to determine encType. Please specify it.")
         },
+        keyB64 = Base64.encode(key),
     )
 
     init {
@@ -36,7 +37,6 @@ class SymmetricCryptoKey(
             throw IllegalArgumentException("Unsupported encType/key length.")
         }
 
-        keyB64 = Base64.encode(key)
         if (encKey != null) {
             encKeyB64 = encKey?.let(Base64::encode)
         }

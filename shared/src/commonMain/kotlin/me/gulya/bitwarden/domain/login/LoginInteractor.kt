@@ -4,6 +4,9 @@ import me.gulya.bitwarden.api.BitwardenApi
 import me.gulya.bitwarden.crypto.Crypto
 import me.gulya.bitwarden.domain.data.AuthResult
 import me.gulya.bitwarden.domain.data.SymmetricCryptoKey
+import me.gulya.bitwarden.domain.data.crypto.EncryptedKey
+import me.gulya.bitwarden.domain.data.crypto.EncryptedPrivateKey
+import me.gulya.bitwarden.domain.data.crypto.MasterKeyHash
 import me.gulya.bitwarden.enums.DeviceType
 import me.gulya.bitwarden.server.request.DeviceRequest
 import me.gulya.bitwarden.server.request.PreloginRequest
@@ -55,7 +58,21 @@ class LoginInteractor(
                 val decodedToken = tokenInteractor.accessToken()
                 println("Access token (decoded): $decodedToken")
 
-                keyStorage.saveEncryptionKey(masterPassword)
+                keyStorage.saveMasterKeyHash(MasterKeyHash(hashedPassword))
+                keyStorage.saveEncryptedKey(EncryptedKey(key.keyB64))
+                keyStorage.saveEncryptedPrivateKey(EncryptedPrivateKey(tokenResponse.key))
+
+                val privateKey =
+                    if (tokenResponse.privateKey != null) {
+                        tokenResponse.privateKey
+                    } else {
+                        // This user does not have a key pair yet (old account?), so we are generating it.
+                        try {
+                            val keyPair = crypto.createKeyPair()
+                        } catch (ignore: Exception) {
+
+                        }
+                    }
 
                 return AuthResult(
                     twoFactor = false,

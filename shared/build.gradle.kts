@@ -48,5 +48,8 @@ kotlin {
             }
         }
         val jvmTest by getting
+        all {
+            languageSettings.enableLanguageFeature("InlineClasses")
+        }
     }
 }

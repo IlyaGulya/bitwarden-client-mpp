@@ -47,7 +47,7 @@ class BitwardenSdk(
     private val cryptoFunctions: CryptoFunctions = CryptoFunctionsImpl(cryptoPrimitives)
     private val crypto: Crypto = CryptoImpl(cryptoFunctions)
 
-    private val masterPasswordStorage = InMemoryKeyStorage()
+    private val keyStorage = InMemoryKeyStorage()
     private val tokenStorage = InMemoryTokenStorage()
 
     private val tokenInteractor = TokenInteractor(json, tokenStorage)
@@ -59,7 +59,7 @@ class BitwardenSdk(
         api = api,
         tokenInteractor = tokenInteractor,
         tokenStorage = tokenStorage,
-        masterPasswordStorage = masterPasswordStorage,
+        keyStorage = keyStorage,
     )
 
     private val syncInteractor = SyncInteractor(api, tokenInteractor)
@@ -99,7 +99,7 @@ class EncryptionInteractor(
             if (orgId != null) {
                 TODO("Organizations is not supported yet")
             } else {
-                val encryptedEncryptionKey = keyStorage.encryptedEncryptionKey
+                val encryptedEncryptionKey = keyStorage.encryptedKey
                 if (encryptedEncryptionKey != null) {
                     val key = crypto.
                 } else {

@@ -33,7 +33,7 @@ kotlin {
                 implementation(project(":shared"))
                 implementation("com.github.ajalt.clikt:clikt:3.0.1")
                 implementation("io.ktor:ktor-client-okhttp:1.4.1")
-                implementation("com.google.lanterna:lanterna:3.0.4")
+//                implementation("com.google.lanterna:lanterna:3.0.4")
             }
         }
         val jvmTest by getting
