@@ -1,5 +1,6 @@
 package me.gulya.bitwarden.domain.login
 
+import com.github.aakira.napier.Napier
 import me.gulya.bitwarden.api.BitwardenApi
 import me.gulya.bitwarden.crypto.Crypto
 import me.gulya.bitwarden.domain.data.AuthResult
@@ -7,8 +8,10 @@ import me.gulya.bitwarden.domain.data.SymmetricCryptoKey
 import me.gulya.bitwarden.domain.data.crypto.EncryptedKey
 import me.gulya.bitwarden.domain.data.crypto.EncryptedPrivateKey
 import me.gulya.bitwarden.domain.data.crypto.MasterKeyHash
+import me.gulya.bitwarden.domain.data.crypto.SessionKey
 import me.gulya.bitwarden.enums.DeviceType
 import me.gulya.bitwarden.server.request.DeviceRequest
+import me.gulya.bitwarden.server.request.KeysRequest
 import me.gulya.bitwarden.server.request.PreloginRequest
 import me.gulya.bitwarden.server.request.TokenRequest
 import me.gulya.bitwarden.server.response.IdentityResponse
@@ -59,8 +62,8 @@ class LoginInteractor(
                 println("Access token (decoded): $decodedToken")
 
                 keyStorage.saveMasterKeyHash(MasterKeyHash(hashedPassword))
-                keyStorage.saveEncryptedKey(EncryptedKey(key.keyB64))
-                keyStorage.saveEncryptedPrivateKey(EncryptedPrivateKey(tokenResponse.key))
+                keyStorage.saveKey(SessionKey(key.keyB64))
+                keyStorage.saveEncryptedKey(EncryptedKey(tokenResponse.key))
 
                 val privateKey =
                     if (tokenResponse.privateKey != null) {
@@ -69,10 +72,22 @@ class LoginInteractor(
                         // This user does not have a key pair yet (old account?), so we are generating it.
                         try {
                             val keyPair = crypto.createKeyPair(key)
-                        } catch (ignore: Exception) {
-
+                            api.accountKeys(
+                                KeysRequest(
+                                    publicKey = keyPair.publicKey,
+                                    encryptedPrivateKey = keyPair.privateKey.encryptedString
+                                )
+                            )
+                            keyPair.privateKey.encryptedString
+                        } catch (exception: Exception) {
+                            Napier.e("Error during generation and submittment of key pair", exception)
+                            null
                         }
                     }
+
+                if (privateKey != null) {
+                    keyStorage.saveEncryptedPrivateKey(EncryptedPrivateKey(privateKey))
+                }
 
                 return AuthResult(
                     twoFactor = false,

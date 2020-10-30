@@ -1,9 +1,6 @@
 package me.gulya.bitwarden.crypto
 
-import me.gulya.bitwarden.enums.CryptoHashAlgorithm
-
 expect object PlatformCryptoPrimitives {
-    fun pbkdf2(password: ByteArray, salt: ByteArray, hashAlgorithm: CryptoHashAlgorithm, iterations: Int): ByteArray
-    fun generateRsaOaepSha1KeyPair(length: RsaKeyLength): AsymmetricKeyPair
+    fun generateRsaKeyPair(length: RsaKeyLength): AsymmetricKeyPair
     fun randomBytes(numBytes: Int): ByteArray
 }

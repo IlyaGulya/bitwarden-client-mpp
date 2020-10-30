@@ -74,7 +74,7 @@ class KtorBitwardenApiImpl(
         }
     }
 
-    override suspend fun postAccountKeys(request: KeysRequest) {
+    override suspend fun accountKeys(request: KeysRequest) {
         TODO("Not yet implemented")
     }
 

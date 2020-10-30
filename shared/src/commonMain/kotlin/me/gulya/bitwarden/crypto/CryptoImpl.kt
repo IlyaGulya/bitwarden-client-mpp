@@ -1,6 +1,7 @@
 package me.gulya.bitwarden.crypto
 
 import com.soywiz.krypto.encoding.base64
+import me.gulya.bitwarden.domain.data.EncryptedString
 import me.gulya.bitwarden.domain.data.SymmetricCryptoKey
 import me.gulya.bitwarden.enums.CryptoHashAlgorithm
 import me.gulya.bitwarden.enums.KeyDerivationFunctionType
@@ -28,8 +29,17 @@ class CryptoImpl(
         return SymmetricCryptoKey(key)
     }
 
-    override suspend fun encrypt(value: ByteArray, key: SymmetricCryptoKey) {
-        val encryptedValue =
+    override suspend fun encrypt(value: ByteArray, key: SymmetricCryptoKey): EncryptedString {
+        val encryptedValue = aesEncrypt(value, key)
+        return encryptedValue.run {
+            EncryptedString(
+                encryptionType = key.encType,
+                data = data.toByteString().base64(),
+                initializationVector = initializationVector.toByteString().base64(),
+                messageAuthCode = messageAuthCode?.toByteString()?.base64()
+            )
+
+        }
     }
 
     override suspend fun createKeyPair(key: SymmetricCryptoKey): RsaKeyPair {
@@ -37,7 +47,7 @@ class CryptoImpl(
         return keyPair.run {
             RsaKeyPair(
                 publicKey = public.toByteString().base64(),
-                privateKey = encrypt(private, key).
+                privateKey = encrypt(private, key)
             )
         }
     }
@@ -58,7 +68,7 @@ class CryptoImpl(
 
 }
 
-data class EncryptedValue(
+class EncryptedValue(
     val key: SymmetricCryptoKey,
     val data: ByteArray,
     val initializationVector: ByteArray,

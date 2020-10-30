@@ -2,6 +2,7 @@ package me.gulya.bitwarden.crypto
 
 import com.soywiz.krypto.AES
 import com.soywiz.krypto.HMAC
+import com.soywiz.krypto.PBKDF2
 import com.soywiz.krypto.Padding
 import me.gulya.bitwarden.enums.CryptoHashAlgorithm
 
@@ -18,16 +19,20 @@ class CryptoFunctionsImpl(
             throw IllegalArgumentException("Unsupported PBKDF2 algorithm: $hashAlgorithm")
         }
 
-        return primitives.pbkdf2(
-            password = password,
-            salt = salt,
-            hashAlgorithm = hashAlgorithm,
-            iterations = iterations
-        )
+        return when (hashAlgorithm) {
+            CryptoHashAlgorithm.SHA256 -> PBKDF2.pbkdf2WithHmacSHA256(
+                password = password,
+                salt = salt,
+                iterationCount = iterations,
+                keySizeInBits = 256
+            )
+            CryptoHashAlgorithm.SHA512 -> TODO("PBKDF2 with SHA512 is not supported by crypto library yet")
+            else -> throw IllegalArgumentException("Digest $hashAlgorithm is not supported by PBKDF2")
+        }
     }
 
     override suspend fun generateRsaKeyPair(length: RsaKeyLength): AsymmetricKeyPair {
-        return primitives.generateRsaOaepSha1KeyPair(length)
+        return primitives.generateRsaKeyPair(length)
     }
 
     override suspend fun randomBytes(numBytes: Int): ByteArray {
@@ -39,7 +44,7 @@ class CryptoFunctionsImpl(
     }
 
     override suspend fun hmac(macData: ByteArray, macKey: ByteArray, hashAlgorithm: CryptoHashAlgorithm): ByteArray {
-        return when(hashAlgorithm) {
+        return when (hashAlgorithm) {
             CryptoHashAlgorithm.SHA1 -> HMAC.hmacSHA1(macKey, macData)
             CryptoHashAlgorithm.SHA256 -> HMAC.hmacSHA256(macKey, macData)
             CryptoHashAlgorithm.SHA512 -> TODO("HMAC for SHA512 is not supported yet")

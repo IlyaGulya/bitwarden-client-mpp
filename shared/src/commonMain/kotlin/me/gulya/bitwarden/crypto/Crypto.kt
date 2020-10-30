@@ -1,5 +1,6 @@
 package me.gulya.bitwarden.crypto
 
+import me.gulya.bitwarden.domain.data.EncryptedString
 import me.gulya.bitwarden.domain.data.SymmetricCryptoKey
 import me.gulya.bitwarden.enums.KeyDerivationFunctionType
 
@@ -18,7 +19,7 @@ interface Crypto {
     suspend fun encrypt(
         value: ByteArray,
         key: SymmetricCryptoKey
-    )
+    ): EncryptedString
 
     suspend fun createKeyPair(key: SymmetricCryptoKey): RsaKeyPair
 

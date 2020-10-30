@@ -33,6 +33,7 @@ kotlin {
                 api("io.ktor:ktor-client-serialization:1.4.1")
                 api("io.ktor:ktor-client-logging:1.4.1")
                 api("com.soywiz.korlibs.krypto:krypto:2.0.0-alpha")
+                api("com.github.aakira:napier:1.4.1")
                 implementation("com.squareup.okio:okio:2.9.0")
             }
         }
