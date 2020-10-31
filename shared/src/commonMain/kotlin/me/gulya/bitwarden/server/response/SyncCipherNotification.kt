@@ -5,5 +5,5 @@ data class SyncCipherNotification(
     val userId: String?,
     val organizationId: String?,
     val collectionIds: Set<String>?,
-    var revisionDate: DateTimeContainer,
+    val revisionDate: DateTimeContainer,
 )

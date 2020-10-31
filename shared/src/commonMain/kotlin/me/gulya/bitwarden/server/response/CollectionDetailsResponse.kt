@@ -9,5 +9,5 @@ data class CollectionDetailsResponse(
     @SerialName("OrganizationId") val organizationId: String?,
     @SerialName("Name") val name: String?,
     @SerialName("ExternalId") val externalId: String?,
-    @SerialName("ReadOnly") var readOnly: Boolean,
+    @SerialName("ReadOnly") val readOnly: Boolean,
 )

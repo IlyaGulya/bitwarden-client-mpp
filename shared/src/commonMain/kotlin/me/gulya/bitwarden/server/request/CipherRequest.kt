@@ -7,7 +7,7 @@ import me.gulya.bitwarden.server.*
 import me.gulya.bitwarden.server.response.DateTimeContainer
 
 class CipherRequest(
-    var type: CipherType,
+    val type: CipherType,
     val organizationId: String?,
     val folderId: String?,
     val name: String?,

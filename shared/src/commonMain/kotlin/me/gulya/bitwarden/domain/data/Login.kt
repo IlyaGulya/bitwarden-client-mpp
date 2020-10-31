@@ -2,7 +2,6 @@ package me.gulya.bitwarden.domain.data
 
 import com.soywiz.klock.DateTime
 import me.gulya.bitwarden.data.LoginData
-import kotlin.jvm.JvmOverloads
 
 class Login(
     val username: EncryptedString?,
@@ -11,7 +10,6 @@ class Login(
     val passwordRevisionDate: DateTime?,
     val uris: List<LoginUri>,
 ) {
-    @JvmOverloads
     constructor(obj: LoginData) : this(
         username = obj.username.toCipherString(),
         password = obj.password.toCipherString(),

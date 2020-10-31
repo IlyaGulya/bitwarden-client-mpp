@@ -12,7 +12,7 @@ data class ProfileResponse(
     @SerialName("Premium") val premium: Boolean,
     @SerialName("MasterPasswordHint") val masterPasswordHint: String?,
     @SerialName("Culture") val culture: String?,
-    @SerialName("TwoFactorEnabled") var twoFactorEnabled: Boolean,
+    @SerialName("TwoFactorEnabled") val twoFactorEnabled: Boolean,
     @SerialName("Key") val key: String?,
     @SerialName("PrivateKey") val privateKey: String?,
     @SerialName("SecurityStamp") val securityStamp: String?,

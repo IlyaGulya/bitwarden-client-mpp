@@ -3,68 +3,53 @@ package me.gulya.bitwarden.utilities
 expect fun publicSuffixList(): List<String>
 
 // ref: https://github.com/danesparza/domainname-parser
-class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?) {
-    private var subDomain = ""
-    private var domain = ""
-    private var tld = ""
-    private var tldRule: TLDRule? = null
+class DomainName(
+    val tld: String,
+    val sld: String,
+    val subDomain: String,
+    val tldRule: TLDRule?
+) {
+    val domain = sld
 
-    fun getDomain(): String {
-        return domain
+    val baseDomain by lazy {
+        "$domain.$tld"
     }
 
-    fun getSld(): String {
-        return domain
-    }
-
-    fun getTld(): String {
-        return tld
-    }
-
-    fun getRule(): TLDRule? {
-        return tldRule
-    }
-
-    fun getBaseDomain(): String {
-        return "$domain.$tld"
-    }
-
-    class TLDRule(ruleInfo: String) : Comparable<TLDRule> {
-        var name: String? = null
-
-        var type = RuleType.values()[0]
+    class TLDRule(
+        var name: String,
+        var type: RuleType,
+    ) : Comparable<TLDRule> {
 
         override operator fun compareTo(other: TLDRule): Int {
-            return name!!.compareTo(other.name!!)
+            return name.compareTo(other.name)
         }
 
         enum class RuleType {
-            Normal, Wildcard, Exception;
+            Normal,
+            Wildcard,
+            Exception,
+        }
 
-            companion object {
-                fun forValue(value: Int): RuleType {
-                    return values()[value]
+        companion object {
+            operator fun invoke(ruleInfo: String): TLDRule {
+                //  Parse the rule and set properties accordingly:
+                return when {
+                    ruleInfo.startsWith("*") -> TLDRule(
+                        type = RuleType.Wildcard,
+                        name = ruleInfo.substring(2),
+                    )
+                    ruleInfo.startsWith("!") -> TLDRule(
+                        type = RuleType.Exception,
+                        name = ruleInfo.substring(1),
+                    )
+                    else -> TLDRule(
+                        type = RuleType.Normal,
+                        name = ruleInfo,
+                    )
                 }
             }
         }
 
-        init {
-            //  Parse the rule and set properties accordingly:
-            when {
-                ruleInfo.startsWith("*") -> {
-                    type = RuleType.Wildcard
-                    name = ruleInfo.substring(2)
-                }
-                ruleInfo.startsWith("!") -> {
-                    type = RuleType.Exception
-                    name = ruleInfo.substring(1)
-                }
-                else -> {
-                    type = RuleType.Normal
-                    name = ruleInfo
-                }
-            }
-        }
     }
 
     private class TLDRulesCache private constructor() {
@@ -74,38 +59,19 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
         }
 
         private fun getTLDRules(): Map<TLDRule.RuleType, Map<String, TLDRule>> {
-//            if (CoreHelpers.InDebugMode()) {
-//                Debug.WriteLine(java.lang.String.format("Loaded %1\$s rules into cache.", results.values.Sum { r -> r.Values.Count }))
-//            }
             return publicSuffixList()
                 //  Strip out comments and blank lines
                 .filter { ruleString -> !ruleString.startsWith("//") && ruleString.isNotBlank() }
                 .map { TLDRule(it) }
                 .groupBy { it.type }
                 .mapValues { (_, value) ->
-                    value.associateBy { it.name ?: "" }
+                    value.associateBy { it.name }
                 }
         }
 
         companion object {
-            private var _uniqueInstance: TLDRulesCache? = null
-            private val _syncObj = Any()
-            private val _syncList = Any()
-            fun getInstance(): TLDRulesCache? {
-                if (_uniqueInstance == null) {
-//                    synchronized(_syncObj) {
-//                        if (_uniqueInstance == null) {
-//                            _uniqueInstance = TLDRulesCache()
-//                        }
-//                    }
-                    _uniqueInstance = TLDRulesCache()
-                }
-                return _uniqueInstance
-            }
-
-            fun reset() {
-//                synchronized(_syncObj) { _uniqueInstance = null }
-                _uniqueInstance = null
+            val instance: TLDRulesCache by lazy {
+                TLDRulesCache()
             }
         }
 
@@ -128,26 +94,26 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
         }
 
         fun tryParseBaseDomain(domainString: String): String? {
-            return tryParse(domainString)?.getBaseDomain()
+            return tryParse(domainString)?.baseDomain
         }
 
         private fun parseDomainName(
             domainString: String,
         ): DomainName {
             // Make sure domain is all lowercase
-            val domainString = domainString.toLowerCase()
+            val lowercaseDomainString = domainString.toLowerCase()
             var tld = ""
             var sld = ""
             var subDomain = ""
             val matchingRule: TLDRule?
 
             //  If the fqdn is empty, we have a problem already
-            if (domainString.trim { it <= ' ' } == "") {
+            if (lowercaseDomainString.trim { it <= ' ' } == "") {
                 throw IllegalArgumentException("The domain cannot be blank")
             }
 
             //  Next, find the matching rule:
-            matchingRule = findMatchingTLDRule(domainString)
+            matchingRule = findMatchingTLDRule(lowercaseDomainString)
 
             //  At this point, no rules match, we have a problem
             if (matchingRule == null) {
@@ -159,24 +125,24 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
             var tldIndex: Int
             when (matchingRule.type) {
                 TLDRule.RuleType.Normal -> {
-                    tldIndex = domainString.lastIndexOf("." + matchingRule.name)
-                    tempSudomainAndDomain = domainString.substring(0, tldIndex)
-                    tld = domainString.substring(tldIndex + 1)
+                    tldIndex = lowercaseDomainString.lastIndexOf("." + matchingRule.name)
+                    tempSudomainAndDomain = lowercaseDomainString.substring(0, tldIndex)
+                    tld = lowercaseDomainString.substring(tldIndex + 1)
                 }
                 TLDRule.RuleType.Wildcard -> {
                     //  This finds the last portion of the TLD...
-                    tldIndex = domainString.lastIndexOf("." + matchingRule.name)
-                    tempSudomainAndDomain = domainString.substring(0, tldIndex)
+                    tldIndex = lowercaseDomainString.lastIndexOf("." + matchingRule.name)
+                    tempSudomainAndDomain = lowercaseDomainString.substring(0, tldIndex)
 
                     //  But we need to find the wildcard portion of it:
                     tldIndex = tempSudomainAndDomain.lastIndexOf(".")
-                    tempSudomainAndDomain = domainString.substring(0, tldIndex)
-                    tld = domainString.substring(tldIndex + 1)
+                    tempSudomainAndDomain = lowercaseDomainString.substring(0, tldIndex)
+                    tld = lowercaseDomainString.substring(tldIndex + 1)
                 }
                 TLDRule.RuleType.Exception -> {
-                    tldIndex = domainString.lastIndexOf(".")
-                    tempSudomainAndDomain = domainString.substring(0, tldIndex)
-                    tld = domainString.substring(tldIndex + 1)
+                    tldIndex = lowercaseDomainString.lastIndexOf(".")
+                    tempSudomainAndDomain = lowercaseDomainString.substring(0, tldIndex)
+                    tld = lowercaseDomainString.substring(tldIndex + 1)
                 }
             }
 
@@ -188,7 +154,7 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
             //  If we have 2+ parts, the last part is the domain, the other parts (combined) are the subdomain
             if (lstRemainingParts.isNotEmpty()) {
                 //  Set the domain:
-                sld = lstRemainingParts.get(lstRemainingParts.size - 1)
+                sld = lstRemainingParts[lstRemainingParts.size - 1]
 
                 //  Set the subdomain, if there is one to set:
                 if (lstRemainingParts.size > 1) {
@@ -199,7 +165,7 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
             return DomainName(
                 tld = tld,
                 sld = sld,
-                subDdomain = subDomain,
+                subDomain = subDomain,
                 tldRule = matchingRule
             )
         }
@@ -228,7 +194,7 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
                 val rules = TLDRule.RuleType.values()
                 for (rule in rules) {
                     //  Try to match rule:
-                    val result = TLDRulesCache.getInstance()?.getTLDRuleLists()?.get(rule)?.get(checkAgainst)
+                    val result = TLDRulesCache.instance.getTLDRuleLists()[rule]?.get(checkAgainst)
                     if (result != null) {
                         ruleMatches.add(result)
                     }
@@ -238,7 +204,7 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
             }
 
             //  Sort our matches list (longest rule wins, according to :
-            val results = ruleMatches.sortedBy { it.name?.length }
+            val results = ruleMatches.sortedBy { it.name.length }
 
             //  Take the top result (our primary match):
             val primaryMatch = results.firstOrNull()
@@ -250,12 +216,5 @@ class DomainName(tld: String, sld: String, subDdomain: String, tldRule: TLDRule?
             }
             return primaryMatch
         }
-    }
-
-    init {
-        this.tld = tld
-        domain = sld
-        subDomain = subDdomain
-        this.tldRule = tldRule
     }
 }

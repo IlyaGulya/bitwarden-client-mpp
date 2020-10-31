@@ -2,58 +2,29 @@ package me.gulya.bitwarden.presentation
 
 class CardView(
     val cardholderName: String?,
-    brand: String?,
-    number: String?,
+    val brand: String?,
+    val number: String?,
     val expMonth: String?,
     val expYear: String?,
     val code: String?,
-    subTitle: String?,
 ) {
-    private var _brand: String? = brand
-    private var _number: String? = number
-    private var _subTitle: String? = subTitle
 
     val maskedCode: String?
         get() = code?.let { (0..(it.length)).joinToString { "•" } }
-    var brand: String?
-        get() = _brand
-        set(value) {
-            _brand = value
-            _subTitle = null
-        }
-    var number: String?
-        get() = _number
-        set(value) {
-            _number = value
-            _subTitle = null
-        }
 
-    // Show last 5 on amex, last 4 for all others
-    val subTitle: String?
-        get() {
-            if (_subTitle == null) {
-                _subTitle = brand
-                val number = number
-                if (number != null && number.length >= 4) {
-                    if (!_subTitle.isNullOrBlank()) {
-                        _subTitle += ", "
-                    } else {
-                        _subTitle = ""
-                    }
-                    // Show last 5 on amex, last 4 for all others
-                    // TODO Use more idiomatic way to express this.
-                    val isAmex = number.length >= 5 && number.matches("^3[47]".toRegex())
-                    val count =
-                        if (isAmex) {
-                            5
-                        } else {
-                            4
-                        }
-                    _subTitle += "*${number.substring(number.length - count)}"
-                }
-            }
-            return _subTitle
-        }
+    val subTitle: String? by lazy {
+        val number = number ?: ""
+        val isAmex = number.length >= 5 && number.matches("^3[47]".toRegex())
+        val digitAmount = if (isAmex) 5 else 4
+        val preparedNumber = number.takeLast(digitAmount)
+        val titleAndNumber =
+            listOfNotNull(brand, preparedNumber)
+                .asSequence()
+                .filter { it.isNotBlank() }
+                .joinToString(", *")
+
+        titleAndNumber
+    }
 
     val expiration: String?
         get() {

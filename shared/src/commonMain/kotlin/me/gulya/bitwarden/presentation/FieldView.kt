@@ -3,11 +3,11 @@ package me.gulya.bitwarden.presentation
 import me.gulya.bitwarden.domain.data.Field
 import me.gulya.bitwarden.enums.FieldType
 
-class FieldView(
+data class FieldView(
     val name: String?,
     val value: String?,
     val type: FieldType,
-    var newField: Boolean = false,
+    val newField: Boolean = false,
 ) {
     constructor(f: Field) : this(
         name = null,

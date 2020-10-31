@@ -17,7 +17,6 @@ class CardDecryptor(
                 expMonth = encryptionInteractor.decryptUtf8(expMonth, key),
                 expYear = encryptionInteractor.decryptUtf8(expYear, key),
                 code = encryptionInteractor.decryptUtf8(code, key),
-                subTitle = null,
             )
         }
     }
