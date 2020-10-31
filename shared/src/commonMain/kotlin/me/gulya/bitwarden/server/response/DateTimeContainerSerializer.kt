@@ -21,10 +21,12 @@ data class DateTimeContainer(
 @Serializer(forClass = DateTimeContainer::class)
 class DateTimeContainerSerializer : KSerializer<DateTimeContainer> {
     private val formats = listOf(
+        "yyyy-MM-dd'T'HH:mm:ss.SSZ",
         "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
         "yyyy-MM-dd'T'HH:mm:ss.SSSSZ",
         "yyyy-MM-dd'T'HH:mm:ss.SSSSSZ",
         "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ",
+        "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ",
     ).map { DateFormat(it) }
 
     override fun deserialize(decoder: Decoder): DateTimeContainer {

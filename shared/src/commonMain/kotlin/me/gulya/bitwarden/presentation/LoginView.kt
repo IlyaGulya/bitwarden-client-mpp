@@ -8,7 +8,7 @@ data class LoginView(
     val passwordRevisionDate: DateTime?,
     val totp: String?,
     val uris: List<LoginUriView>,
-) : View() {
+) {
 
     val uri: String?
         get() = if (hasUris) uris[0].uri else null

@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DomainsResponse(
-    @SerialName("EquivalentDomains") val equivalentDomains: List<List<String>>,
-    @SerialName("GlobalEquivalentDomains") val globalEquivalentDomains: List<GlobalDomainResponse>
+    @SerialName("EquivalentDomains") val equivalentDomains: List<List<String>>?,
+    @SerialName("GlobalEquivalentDomains") val globalEquivalentDomains: List<GlobalDomainResponse>?
 )

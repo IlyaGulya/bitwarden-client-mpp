@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.presentation
 
-import me.gulya.bitwarden.domain.data.ITreeNodeObject
+import me.gulya.bitwarden.domain.data.TreeNodeValue
 
 data class CollectionView(
     override val id: String?,
@@ -8,4 +8,4 @@ data class CollectionView(
     override val name: String?,
     val externalId: String?,
     val readOnly: Boolean = false,
-) : View(), ITreeNodeObject
+) : TreeNodeValue

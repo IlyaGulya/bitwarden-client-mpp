@@ -25,7 +25,7 @@ data class CipherView(
     val collectionIds: Set<String>,
     val revisionDate: DateTime,
     val deletedDate: DateTime?,
-) : View() {
+) {
 
     val subTitle: String?
         get() = when (type) {

@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.domain.data
 
-interface ITreeNodeObject {
+interface TreeNodeValue {
     val id: String?
     val name: String?
 }

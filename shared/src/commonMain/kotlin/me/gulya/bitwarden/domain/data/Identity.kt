@@ -1,7 +1,6 @@
 package me.gulya.bitwarden.domain.data
 
 import me.gulya.bitwarden.data.IdentityData
-import me.gulya.bitwarden.presentation.IdentityView
 
 
 class Identity(
@@ -44,29 +43,6 @@ class Identity(
         passportNumber = obj.passportNumber.toCipherString(),
         licenseNumber = obj.licenseNumber.toCipherString(),
     )
-
-    suspend fun decryptAsync(orgId: String?): IdentityView {
-        return IdentityView(
-            title = title?.decrypt(orgId),
-            firstName = firstName?.decrypt(orgId),
-            middleName = middleName?.decrypt(orgId),
-            lastName = lastName?.decrypt(orgId),
-            address1 = address1?.decrypt(orgId),
-            address2 = address2?.decrypt(orgId),
-            address3 = address3?.decrypt(orgId),
-            city = city?.decrypt(orgId),
-            state = state?.decrypt(orgId),
-            postalCode = postalCode?.decrypt(orgId),
-            country = country?.decrypt(orgId),
-            company = company?.decrypt(orgId),
-            email = email?.decrypt(orgId),
-            phone = phone?.decrypt(orgId),
-            sSN = sSN?.decrypt(orgId),
-            username = username?.decrypt(orgId),
-            passportNumber = passportNumber?.decrypt(orgId),
-            licenseNumber = licenseNumber?.decrypt(orgId),
-        )
-    }
 
     fun toIdentityData(): IdentityData {
         return IdentityData(

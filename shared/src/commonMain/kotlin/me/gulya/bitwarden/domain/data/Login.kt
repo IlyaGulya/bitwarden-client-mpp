@@ -2,7 +2,6 @@ package me.gulya.bitwarden.domain.data
 
 import com.soywiz.klock.DateTime
 import me.gulya.bitwarden.data.LoginData
-import me.gulya.bitwarden.presentation.LoginView
 import kotlin.jvm.JvmOverloads
 
 class Login(
@@ -20,17 +19,6 @@ class Login(
         passwordRevisionDate = obj.passwordRevisionDate,
         uris = obj.uris.map { LoginUri(it) },
     )
-
-
-    suspend fun decrypt(orgId: String?): LoginView {
-        return LoginView(
-            username = username?.decrypt(orgId),
-            password = password?.decrypt(orgId),
-            passwordRevisionDate = passwordRevisionDate,
-            totp = totp?.decrypt(orgId),
-            uris = uris.map { uri -> uri.decrypt(orgId) }
-        )
-    }
 
     fun toLoginData(): LoginData {
         return LoginData(

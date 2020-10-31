@@ -30,7 +30,9 @@ class BitwardenCli : CliktCommand() {
         runBlocking {
             sdk.login(email, password)
 
-            println(sdk.sync())
+            sdk.syncAndDecryptCiphers().forEach {
+                println(it)
+            }
         }
 
         exitProcess(0)

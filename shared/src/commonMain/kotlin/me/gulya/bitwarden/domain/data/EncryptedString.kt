@@ -2,103 +2,139 @@ package me.gulya.bitwarden.domain.data
 
 import me.gulya.bitwarden.enums.EncryptionType
 import kotlin.jvm.JvmName
-import kotlin.jvm.JvmOverloads
 
-class EncryptedString {
-    val encryptedString: String
-    val encryptionType: EncryptionType
-    var initializationVector: String? = null
-    var data: String? = null
-    var messageAuthCode: String? = null
+sealed class EncryptedString {
+    abstract val encryptionType: EncryptionType
+    abstract val encryptedString: String
+    abstract val data: String
 
+    data class AesEncryptedString(
+        override val encryptedString: String,
+        override val encryptionType: EncryptionType,
+        override val data: String,
+        val initializationVector: String,
+        val messageAuthCode: String?,
+    ) : EncryptedString()
 
-    private var _decryptedValue: String? = null
+    data class RsaEncryptedString(
+        override val encryptedString: String,
+        override val encryptionType: EncryptionType,
+        override val data: String,
+    ) : EncryptedString()
 
-    @JvmOverloads
-    constructor(
-        encryptionType: EncryptionType,
-        data: String,
-        initializationVector: String? = null,
-        messageAuthCode: String? = null
-    ) {
-        if (data.isBlank()) {
-            throw IllegalArgumentException("Data is empty")
-        }
-        val encryptedString =
-            if (!initializationVector.isNullOrBlank()) {
-                "${encryptionType.value}.$initializationVector|$data"
-            } else {
-                "${encryptionType.value}.$data"
+    companion object {
+
+        operator fun invoke(
+            encryptionType: EncryptionType,
+            data: String,
+            initializationVector: String? = null,
+            messageAuthCode: String? = null
+        ): EncryptedString {
+            if (data.isBlank()) {
+                throw IllegalArgumentException("Data is empty")
             }
-        this.encryptedString =
-            if (!messageAuthCode.isNullOrBlank()) {
-                "$encryptedString|$messageAuthCode"
-            } else {
-                encryptedString
-            }
-        this.encryptionType = encryptionType
-        this.data = data
-        this.initializationVector = initializationVector
-        this.messageAuthCode = messageAuthCode
-    }
+            val payload =
+                listOfNotNull(
+                    initializationVector,
+                    data,
+                    messageAuthCode
+                )
+                    .filter { it.isNotBlank() }
+                    .joinToString("|")
 
-    constructor(encryptedString: String) {
-        this.encryptedString = encryptedString
-        if (encryptedString.isBlank()) {
-            throw IllegalArgumentException("encryptedString is blank")
-        }
-        val headerPieces = encryptedString.split("[.]").dropLastWhile { it.isEmpty() }.toTypedArray()
-        val encPieces: Array<String>
-        val encType: EncryptionType? = if (headerPieces.size == 2) EncryptionType.valueOf(headerPieces[0]) else null
-        if (encType != null) {
-            encryptionType = encType
-            encPieces = headerPieces[1].split("[|]").dropLastWhile { it.isEmpty() }.toTypedArray()
-        } else {
-            encPieces = encryptedString.split("[|]").dropLastWhile { it.isEmpty() }.toTypedArray()
-            encryptionType =
-                if (encPieces.size == 3) EncryptionType.AES_CBC128_HMAC_SHA256_BASE64 else EncryptionType.AES_CBC256_B64
-        }
-        when (encryptionType) {
-            EncryptionType.AES_CBC128_HMAC_SHA256_BASE64, EncryptionType.AES_CBC256_HMAC_SHA256_BASE64 -> {
-                if (encPieces.size == 3) {
-                    this.initializationVector = encPieces[0]
-                    this.data = encPieces[1]
-                    this.messageAuthCode = encPieces[2]
+            val encryptedString = "${encryptionType.value}.$payload"
+
+            return when (encryptionType) {
+                EncryptionType.AES_CBC256_B64,
+                EncryptionType.AES_CBC128_HMAC_SHA256_BASE64,
+                EncryptionType.AES_CBC256_HMAC_SHA256_BASE64 -> {
+                    AesEncryptedString(
+                        encryptedString = encryptedString,
+                        encryptionType = encryptionType,
+                        data = data,
+                        initializationVector = initializationVector
+                            ?: throw IllegalArgumentException("AES requires IV"),
+                        messageAuthCode = messageAuthCode,
+                    )
+                }
+                EncryptionType.RSA2048_OAEP_SHA1_BASE64,
+                EncryptionType.RSA2048_OAEP_SHA1_HMAC_SHA256_BASE64,
+                EncryptionType.RSA2048_OAEP_SHA256_BASE64,
+                EncryptionType.RSA2048_OAEP_SHA256_HMAC_SHA256_BASE64 -> {
+                    RsaEncryptedString(
+                        encryptedString = encryptedString,
+                        encryptionType = encryptionType,
+                        data = data,
+                    )
                 }
             }
-            EncryptionType.AES_CBC256_B64 -> {
-                if (encPieces.size == 2) {
-                    this.initializationVector = encPieces[0]
-                    this.data = encPieces[1]
-                }
+        }
+
+        operator fun invoke(encryptedString: String): EncryptedString {
+            if (encryptedString.isBlank()) {
+                throw IllegalArgumentException("encryptedString is blank")
             }
-            EncryptionType.RSA2048_OAEP_SHA256_BASE64, EncryptionType.RSA2048_OAEP_SHA1_BASE64 -> {
-                if (encPieces.size == 1) {
-                    this.data = encPieces[0]
+            val headerData = encryptedString.split(".")
+            val (encryptionType, payload) =
+                if (headerData.size == 2) {
+                    val encryptionType = EncryptionType.forValue(headerData[0].toByte())
+                    val payload = headerData[1].split("|")
+                    encryptionType to payload
+                } else {
+                    val payload = encryptedString.split("|")
+                    val encryptionType =
+                        if (payload.size == 3) {
+                            EncryptionType.AES_CBC128_HMAC_SHA256_BASE64
+                        } else {
+                            EncryptionType.AES_CBC256_B64
+                        }
+                    encryptionType to payload
                 }
+            if (payload.isEmpty()) {
+                throw IllegalArgumentException("Payload is empty!")
             }
-            else -> return
+            when (encryptionType) {
+                EncryptionType.AES_CBC128_HMAC_SHA256_BASE64, EncryptionType.AES_CBC256_HMAC_SHA256_BASE64 -> {
+                    if (payload.size == 3) {
+                        return EncryptedString(
+                            encryptionType = encryptionType,
+                            initializationVector = payload[0],
+                            data = payload[1],
+                            messageAuthCode = payload[2],
+                        )
+                    } else {
+                        throw IllegalArgumentException("Encryption type $encryptionType needs IV and MAC")
+                    }
+                }
+                EncryptionType.AES_CBC256_B64 -> {
+                    if (payload.size == 2) {
+                        return EncryptedString(
+                            encryptionType = encryptionType,
+                            initializationVector = payload[0],
+                            data = payload[1],
+                            messageAuthCode = null,
+                        )
+                    } else {
+                        throw IllegalArgumentException("Encryption type $encryptionType needs IV")
+                    }
+                }
+                EncryptionType.RSA2048_OAEP_SHA256_BASE64,
+                EncryptionType.RSA2048_OAEP_SHA1_BASE64 -> {
+                    return EncryptedString(
+                        encryptionType = encryptionType,
+                        initializationVector = null,
+                        data = payload[0],
+                        messageAuthCode = null,
+                    )
+                }
+                else -> throw IllegalArgumentException("Encryption type $encryptionType is not supported!")
+            }
         }
     }
 
-    suspend fun decrypt(orgId: String? = null): String {
-        val currentDecryptedValue = _decryptedValue
-        if (currentDecryptedValue != null) {
-            return currentDecryptedValue
-        }
-//        val cryptoService: ICryptoService = ServiceContainer.Resolve("cryptoService")
-        return try {
-//            val orgKey: SymmetricCryptoKey = cryptoService.GetOrgKeyAsync(orgId)
-//            cryptoService.DecryptToUtf8Async(this, orgKey)
-            "Error: decryption is not implemented yet"
-        } catch (e: Exception) {
-            "Error: decryption failure"
-        }.also {
-            _decryptedValue = it
-        }
-    }
 }
 
+
 @JvmName("toCipherStringNullable")
-fun String?.toCipherString(): EncryptedString? = this?.let(::EncryptedString)
+fun String?.toCipherString(): EncryptedString? = this?.let(EncryptedString::invoke)
 fun String.toCipherString() = EncryptedString(this)

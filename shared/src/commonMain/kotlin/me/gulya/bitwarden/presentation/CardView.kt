@@ -8,7 +8,7 @@ class CardView(
     val expYear: String?,
     val code: String?,
     subTitle: String?,
-) : View() {
+) {
     private var _brand: String? = brand
     private var _number: String? = number
     private var _subTitle: String? = subTitle

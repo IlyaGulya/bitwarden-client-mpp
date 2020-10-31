@@ -1,7 +1,5 @@
 package me.gulya.bitwarden.server
 
-import com.soywiz.klock.DateTime
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.gulya.bitwarden.server.response.DateTimeContainer
@@ -12,5 +10,5 @@ data class ServerLogin(
     @SerialName("Password") val password: String?,
     @SerialName("PasswordRevisionDate") val passwordRevisionDate: DateTimeContainer? = null,
     @SerialName("Totp") val totp: String?,
-    @SerialName("Uris") val uris: List<ServerLoginUri>,
+    @SerialName("Uris") val uris: List<ServerLoginUri>? = null,
 )

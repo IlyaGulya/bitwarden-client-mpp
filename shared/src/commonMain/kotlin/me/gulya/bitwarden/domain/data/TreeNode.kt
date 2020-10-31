@@ -1,6 +1,6 @@
 package me.gulya.bitwarden.domain.data
 
-data class TreeNode<T : ITreeNodeObject?>(
+data class TreeNode<T : TreeNodeValue?>(
     val node: T,
     val name: String?,
     val parent: T?,

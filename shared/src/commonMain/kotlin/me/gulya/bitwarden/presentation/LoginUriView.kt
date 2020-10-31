@@ -1,7 +1,6 @@
 package me.gulya.bitwarden.presentation
 
 import io.ktor.http.*
-import me.gulya.bitwarden.domain.data.LoginUri
 import me.gulya.bitwarden.enums.UriMatchType
 import me.gulya.bitwarden.utilities.DomainName
 
@@ -11,11 +10,14 @@ val IP_REGEX = ("^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
         "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
         "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$").toRegex()
 
-class LoginUriView(u: LoginUri) : View() {
-    private var _uri: String? = null
-    private var _domain: String? = null
-    private var _host: String? = null
-    private var _canLaunch: Boolean? = null
+data class LoginUriView(
+    val uri: String?,
+    var matchType: UriMatchType,
+) {
+
+    val domain: String? by lazy {
+        getDomain(uri).takeIf { !it.isNullOrBlank() }
+    }
 
     companion object {
 
@@ -34,73 +36,38 @@ class LoginUriView(u: LoginUri) : View() {
     }
 
 
-    var match: UriMatchType? = null
-    var uri: String?
-        get() = _uri
-        set(value) {
-            _uri = value
-            _domain = null
-            _canLaunch = null
-        }
-    val domain: String?
-        get() {
-            if (_domain == null && uri != null) {
-                _domain = getDomain(uri)
-                if (_domain == "") {
-                    _domain = null
-                }
-            }
-            return _domain
-        }
     val host: String?
         get() {
-            if (match === UriMatchType.REGULAR_EXPRESSION) {
+            if (matchType === UriMatchType.REGULAR_EXPRESSION) {
                 return null
             }
-            if (_host == null && uri != null) {
-                _host = getHost(uri)
-                if (_host == "") {
-                    _host = null
-                }
-            }
-            return _host
+            return getHost(uri).takeIf { !it.isNullOrBlank() }
         }
+
     val hostOrUri: String?
         get() = host ?: uri
 
-    val isWebsite: Boolean
-        get() {
-            val uri = uri
-            return uri != null && uri.contains("://") && uri.matches(TLD_ENDING_REGEX)
-        }
-    val canLaunch: Boolean
-        get() {
-            return _canLaunch ?: {
-                if (uri != null && match !== UriMatchType.REGULAR_EXPRESSION) {
-                    val uri = launchUri
-                    CAN_LAUNCH_WHITE_LIST.any { prefix -> uri?.startsWith(prefix) == true }.also { canLaunch ->
-                        _canLaunch = canLaunch
-                    }
-                } else {
-                    _canLaunch = false
-                    false
-                }
-            }()
-        }
-    val launchUri: String?
-        get() {
-            val uri = uri
-            return if (uri != null) {
-                val doesNotHaveProtocol = !uri.contains("://")
-                val isTld = uri.matches(TLD_ENDING_REGEX)
-                "http://$uri".takeIf { doesNotHaveProtocol && isTld } ?: uri
-            } else {
-                null
-            }
-        }
+    val isWebsite: Boolean by lazy {
+        uri != null && uri.contains("://") && uri.matches(TLD_ENDING_REGEX)
+    }
 
-    init {
-        match = u.match
+    val canLaunch: Boolean by lazy {
+        if (uri != null && matchType !== UriMatchType.REGULAR_EXPRESSION) {
+            val uri = launchUri
+            CAN_LAUNCH_WHITE_LIST.any { prefix -> uri?.startsWith(prefix) == true }
+        } else {
+            false
+        }
+    }
+
+    val launchUri: String? by lazy {
+        if (uri != null) {
+            val doesNotHaveProtocol = !uri.contains("://")
+            val isTld = uri.matches(TLD_ENDING_REGEX)
+            "http://$uri".takeIf { doesNotHaveProtocol && isTld } ?: uri
+        } else {
+            null
+        }
     }
 }
 

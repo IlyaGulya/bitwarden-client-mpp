@@ -8,7 +8,7 @@ class FieldView(
     val value: String?,
     val type: FieldType,
     var newField: Boolean = false,
-) : View() {
+) {
     constructor(f: Field) : this(
         name = null,
         value = null,

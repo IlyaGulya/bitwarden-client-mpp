@@ -3,12 +3,7 @@ package me.gulya.bitwarden.server.request
 import me.gulya.bitwarden.domain.data.Cipher
 import me.gulya.bitwarden.domain.data.ifType
 import me.gulya.bitwarden.enums.CipherType
-import me.gulya.bitwarden.server.SecureNoteApi
-import me.gulya.bitwarden.server.ServerCard
-import me.gulya.bitwarden.server.ServerField
-import me.gulya.bitwarden.server.ServerIdentity
-import me.gulya.bitwarden.server.ServerLogin
-import me.gulya.bitwarden.server.ServerLoginUri
+import me.gulya.bitwarden.server.*
 import me.gulya.bitwarden.server.response.DateTimeContainer
 
 class CipherRequest(
@@ -47,8 +42,8 @@ class CipherRequest(
                     totp = totp?.encryptedString,
                     uris = uris.map { loginUri ->
                         ServerLoginUri(
-                            match = loginUri.match,
-                            uri = loginUri.uri?.encryptedString,
+                            match = loginUri.matchType,
+                            uri = loginUri.uri.encryptedString,
                         )
                     },
                 )
@@ -114,7 +109,8 @@ class CipherRequest(
                 )
             }
         },
-        attachments = cipher.attachments.takeIf { it.isNotEmpty() }?.associateBy({ it.id }, { it.fileName.encryptedString }),
+        attachments = cipher.attachments.takeIf { it.isNotEmpty() }
+            ?.associateBy({ it.id }, { it.fileName.encryptedString }),
         attachments2 = cipher.attachments.takeIf { it.isNotEmpty() }?.associateBy({ it.id }, {
             it.run {
                 AttachmentRequest(

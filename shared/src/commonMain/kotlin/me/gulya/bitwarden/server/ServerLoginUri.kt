@@ -6,6 +6,6 @@ import me.gulya.bitwarden.enums.UriMatchType
 
 @Serializable
 data class ServerLoginUri(
-    @SerialName("Uri") val uri: String?,
-    @SerialName("Match") val match: UriMatchType?,
+    @SerialName("Uri") val uri: String,
+    @SerialName("Match") val match: UriMatchType,
 )

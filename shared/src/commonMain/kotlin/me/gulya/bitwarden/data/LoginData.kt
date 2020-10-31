@@ -15,7 +15,7 @@ data class LoginData(
         password = data.password,
         passwordRevisionDate = data.passwordRevisionDate?.dateTime,
         totp = data.totp,
-        uris = data.uris.map { u -> LoginUriData(u) },
+        uris = (data.uris ?: emptyList()).map { u -> LoginUriData(u) },
     )
 
 }

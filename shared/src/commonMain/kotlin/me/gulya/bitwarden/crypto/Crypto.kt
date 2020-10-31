@@ -23,5 +23,10 @@ interface Crypto {
 
     suspend fun createKeyPair(key: SymmetricCryptoKey): RsaKeyPair
 
+    suspend fun decryptToUtf8(encryptedString: EncryptedString, key: SymmetricCryptoKey): String?
+
+    suspend fun decryptToBytes(encryptedString: EncryptedString, key: SymmetricCryptoKey): ByteArray?
+    suspend fun stretchKey(sessionKey: SymmetricCryptoKey): SymmetricCryptoKey
+
 }
 

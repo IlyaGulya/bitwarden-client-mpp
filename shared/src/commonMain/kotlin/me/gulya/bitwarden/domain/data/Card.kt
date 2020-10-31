@@ -1,7 +1,6 @@
 package me.gulya.bitwarden.domain.data
 
 import me.gulya.bitwarden.data.CardData
-import me.gulya.bitwarden.presentation.CardView
 
 data class Card(
     val cardholderName: EncryptedString?,
@@ -20,18 +19,6 @@ data class Card(
         expYear = obj.expYear.toCipherString(),
         code = obj.code.toCipherString(),
     )
-
-    suspend fun decrypt(orgId: String?): CardView {
-        return CardView(
-            cardholderName = cardholderName?.decrypt(orgId),
-            brand = brand?.decrypt(orgId),
-            number = number?.decrypt(orgId),
-            expMonth = expMonth?.decrypt(orgId),
-            expYear = expYear?.decrypt(orgId),
-            code = code?.decrypt(orgId),
-            subTitle = null,
-        )
-    }
 
     fun toCardData(): CardData {
         return CardData(

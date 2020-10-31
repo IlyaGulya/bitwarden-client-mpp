@@ -40,7 +40,11 @@ class CryptoFunctionsImpl(
     }
 
     override suspend fun encryptAes(value: ByteArray, initializationVector: ByteArray, encKey: ByteArray): ByteArray {
-        return AES.encryptAesCbc(value, encKey, initializationVector, Padding.PKCS7Padding)
+        return AES.encryptAesCbc(data = value, key = encKey, iv = initializationVector, padding = Padding.PKCS7Padding)
+    }
+
+    override suspend fun decryptAes(value: ByteArray, initializationVector: ByteArray, encKey: ByteArray): ByteArray {
+        return AES.decryptAesCbc(data = value, key = encKey, iv = initializationVector, padding = Padding.PKCS7Padding)
     }
 
     override suspend fun hmac(macData: ByteArray, macKey: ByteArray, hashAlgorithm: CryptoHashAlgorithm): ByteArray {

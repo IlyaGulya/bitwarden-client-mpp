@@ -9,7 +9,7 @@ data class AttachmentView(
     val sizeName: String?,
     val key: SymmetricCryptoKey?,
     val fileName: String?,
-) : View() {
+) {
 
     val fileSize: Long by lazy {
         size?.toLongOrNull() ?: 0

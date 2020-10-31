@@ -52,6 +52,8 @@ interface CryptoFunctions {
 
     suspend fun encryptAes(value: ByteArray, initializationVector: ByteArray, encKey: ByteArray): ByteArray
 
+    suspend fun decryptAes(value: ByteArray, initializationVector: ByteArray, encKey: ByteArray): ByteArray
+
     suspend fun hmac(macData: ByteArray, macKey: ByteArray, hashAlgorithm: CryptoHashAlgorithm): ByteArray
 
 }

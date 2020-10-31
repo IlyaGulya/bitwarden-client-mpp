@@ -1,7 +1,6 @@
 package me.gulya.bitwarden.domain.data
 
 import me.gulya.bitwarden.data.CollectionData
-import me.gulya.bitwarden.presentation.CollectionView
 
 class Collection(
     val id: String? = null,
@@ -18,13 +17,4 @@ class Collection(
         readOnly = obj.readOnly
     )
 
-    suspend fun decrypt(): CollectionView {
-        return CollectionView(
-            id = id,
-            name = name?.decrypt(organizationId),
-            organizationId = organizationId,
-            externalId = externalId,
-            readOnly = readOnly,
-        )
-    }
 }

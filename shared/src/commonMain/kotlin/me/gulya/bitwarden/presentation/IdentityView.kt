@@ -19,7 +19,7 @@ class IdentityView(
     var username: String?,
     var passportNumber: String?,
     var licenseNumber: String?,
-) : View() {
+) {
     private var _firstName: String? = firstName
     private var _lastName: String? = lastName
     private var _subTitle: String? = null

@@ -99,13 +99,8 @@ class KtorBitwardenApiImpl(
     }
 
     override suspend fun identityToken(request: TokenRequest, identityClientId: String): IdentityResponse {
-        val formParts =
-            request
-                .toIdentityToken(identityClientId)
-                .map { (key, value) -> FormPart(key, value) }
-                .toTypedArray()
         return try {
-            val response = client.post<IdentityTokenResponse>() {
+            val response = client.post<IdentityTokenResponse> {
                 url.takeFrom(makeIdentityUrl("/connect/token"))
                 accept(ContentType.Application.Json)
                 body = FormDataContent(Parameters.build {

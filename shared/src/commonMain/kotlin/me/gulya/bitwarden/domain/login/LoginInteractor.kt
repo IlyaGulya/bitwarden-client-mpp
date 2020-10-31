@@ -30,7 +30,7 @@ class LoginInteractor(
 
         val appId = "b1120836-8257-4f08-a72b-3d8d040c5f04" // generate and store locally
         val deviceModel = "Linux Desktop CLI" // get device model, etc.
-        val identityClientId = "CLI" // specify correct client id
+        val identityClientId = "mobile" // specify correct client id
         val device = DeviceRequest(
             type = DeviceType.LinuxDesktop,
             name = deviceModel,
@@ -62,7 +62,7 @@ class LoginInteractor(
                 println("Access token (decoded): $decodedToken")
 
                 keyStorage.saveMasterKeyHash(MasterKeyHash(hashedPassword))
-                keyStorage.saveKey(SessionKey(key.keyB64))
+                keyStorage.saveSessionKey(SessionKey(key.keyB64))
                 keyStorage.saveEncryptedKey(EncryptedKey(tokenResponse.key))
 
                 val privateKey =

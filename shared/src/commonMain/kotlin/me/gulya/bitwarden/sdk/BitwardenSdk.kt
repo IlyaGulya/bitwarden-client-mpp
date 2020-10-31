@@ -1,5 +1,6 @@
 package me.gulya.bitwarden.sdk
 
+import com.github.aakira.napier.Napier
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.features.json.*
@@ -12,7 +13,6 @@ import me.gulya.bitwarden.crypto.*
 import me.gulya.bitwarden.data.CipherData
 import me.gulya.bitwarden.domain.data.AuthResult
 import me.gulya.bitwarden.domain.data.Cipher
-import me.gulya.bitwarden.domain.data.EncryptedString
 import me.gulya.bitwarden.domain.login.*
 import me.gulya.bitwarden.presentation.CipherView
 import me.gulya.bitwarden.server.response.SyncResponse
@@ -64,6 +64,25 @@ class BitwardenSdk(
 
     private val syncInteractor = SyncInteractor(api, tokenInteractor)
 
+    private val encryptionInteractor = EncryptionInteractor(crypto)
+
+    private val cipherDecryptor = CipherDecryptor(
+        encryptionInteractor,
+        LoginDecryptor(encryptionInteractor, UriDecryptor(encryptionInteractor)),
+        SecureNoteDecryptor(encryptionInteractor),
+        CardDecryptor(encryptionInteractor),
+        IdentityDecryptor(encryptionInteractor),
+        AttachmentDecryptor(encryptionInteractor),
+        FieldDecryptor(encryptionInteractor),
+        PasswordHistoryDecryptor(encryptionInteractor)
+    )
+
+    private val folderDecryptor = FolderDecryptor(encryptionInteractor)
+
+    private val collectionDecryptor = CollectionDecryptor(encryptionInteractor)
+
+    private val keyInteractor = KeyInteractor(keyStorage, crypto)
+
     suspend fun login(email: String, password: String): AuthResult {
         return loginInteractor.login(email = email, masterPassword = password)
     }
@@ -72,39 +91,28 @@ class BitwardenSdk(
         return syncInteractor.sync()
     }
 
-    suspend fun syncAndDecodeCiphers(): List<CipherView> {
-        return sync().run {
-            ciphers.map {
-                Cipher(
-                    cipherData = CipherData(
-                        response = it,
-                        userId = tokenInteractor.accessToken()?.userId,
-                        collectionIds = it.collectionIds.toSet(),
-                    ),
-                    localData = emptyMap() // TODO: WTF
-                ).decrypt(orgId = null)
-            }
+    suspend fun syncAndDecryptCiphers(): List<CipherView> {
+        val key = keyInteractor.getEncryptionKey()
+        if (key != null) {
+            return sync().run {
+                ciphers.map {
+                    val cipher = Cipher(
+                        cipherData = CipherData(
+                            response = it,
+                            userId = tokenInteractor.accessToken()?.userId,
+                            collectionIds = it.collectionIds.toSet(),
+                        ),
+                        localData = emptyMap() // TODO: WTF
+                    )
 
+
+                    cipherDecryptor.decrypt(cipher, key)
+                }
+            }
+        } else {
+            Napier.e("Key is null. Unable to decrypt ciphers.")
+            return emptyList()
         }
     }
 
-}
-
-class EncryptionInteractor(
-    private val crypto: Crypto,
-    private val keyStorage: KeyStorage,
-) {
-    suspend fun decrypt(encryptedString: EncryptedString, orgId: String?) {
-        val key =
-            if (orgId != null) {
-                TODO("Organizations is not supported yet")
-            } else {
-                val encryptedEncryptionKey = keyStorage.encryptedKey
-                if (encryptedEncryptionKey != null) {
-                    val key = crypto.
-                } else {
-                    throw IllegalStateException("Encryption key does not exist. We have no key to decrypt.")
-                }
-            }
-    }
 }
