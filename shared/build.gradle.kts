@@ -22,7 +22,7 @@ kotlin {
     jvm {
         compilations.all {
             kotlinOptions {
-                kotlinOptions.jvmTarget = "1.8"
+                kotlinOptions.jvmTarget = "11"
                 kotlinOptions.useIR = true
             }
         }
