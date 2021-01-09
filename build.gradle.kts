@@ -11,7 +11,7 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.21")
         classpath("com.android.tools.build:gradle:3.5.4")
         classpath("dev.icerock.moko:network-generator:0.8.0")
-        classpath("org.jetbrains.compose:compose-gradle-plugin:0.3.0-build139")
+        classpath("org.jetbrains.compose:compose-gradle-plugin:0.3.0-build135")
     }
 }
 group = "me.gulya.bitwarden"
