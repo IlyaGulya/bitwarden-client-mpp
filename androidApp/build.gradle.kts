@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
-    id("kotlin-android-extensions")
+    id("kotlin-parcelize")
 }
 group = "me.gulya.bitwarden"
 version = "1.0-SNAPSHOT"
@@ -16,7 +16,7 @@ dependencies {
     implementation(project(":shared"))
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.2")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
 }
 android {
     compileSdkVersion(30)

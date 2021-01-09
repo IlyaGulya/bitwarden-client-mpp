@@ -1,6 +1,9 @@
+import org.jetbrains.compose.compose
+
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.20"
+    id("org.jetbrains.compose")
 }
 group = "me.gulya.bitwarden"
 version = "1.0-SNAPSHOT"
@@ -35,6 +38,10 @@ kotlin {
                 api("com.soywiz.korlibs.krypto:krypto:2.0.0-alpha")
                 api("com.github.aakira:napier:1.4.1")
                 implementation("com.squareup.okio:okio:2.9.0")
+
+                api(compose.runtime)
+                api(compose.foundation)
+                api(compose.material)
             }
         }
         val commonTest by getting {

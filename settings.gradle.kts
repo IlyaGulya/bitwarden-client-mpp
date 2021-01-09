@@ -4,6 +4,7 @@ pluginManagement {
         google()
         jcenter()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
     resolutionStrategy {
         eachPlugin {
@@ -19,3 +20,4 @@ rootProject.name = "BitwardenMultiplatform"
 include(":shared")
 include(":androidApp")
 include(":cliApp")
+include(":desktopApp")
