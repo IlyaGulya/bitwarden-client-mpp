@@ -1,5 +1,3 @@
-import org.jetbrains.compose.compose
-
 plugins {
     kotlin("multiplatform") // kotlin("jvm") doesn't work well in IDEA/AndroidStudio (https://github.com/JetBrains/compose-jb/issues/22)
     id("org.jetbrains.compose")
@@ -7,30 +5,29 @@ plugins {
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "11"
-            kotlinOptions.useIR = true
-            kotlinOptions.freeCompilerArgs = listOf(
-                *kotlinOptions.freeCompilerArgs.toTypedArray(),
-                "-Xallow-jvm-ir-dependencies",
-                "-Xskip-prerelease-check"
-            )
-
-        }
-        withJava()
     }
+
     sourceSets {
-        named("jvmMain") {
+        val commonMain by getting {
             dependencies {
+                implementation(project(":common:main"))
+                implementation(project(":common:login"))
+                implementation(project(":common:utils"))
                 implementation(compose.desktop.currentOs)
-                implementation(project(":shared"))
+                implementation(Deps.ArkIvanov.Decompose.decompose)
+                implementation(Deps.ArkIvanov.Decompose.extensionsCompose)
+                implementation(Deps.ArkIvanov.MVIKotlin.mvikotlin)
+                implementation(Deps.ArkIvanov.MVIKotlin.mvikotlinMain)
+                implementation(Deps.Badoo.Reaktive.reaktive)
+                implementation(Deps.Badoo.Reaktive.coroutinesInterop)
             }
         }
+        val jvmMain by getting
     }
 }
 
 compose.desktop {
     application {
-        mainClass = "DesktopAppKt"
+        mainClass = "me.gulya.bitwarden.app.desktop.DesktopAppKt"
     }
 }

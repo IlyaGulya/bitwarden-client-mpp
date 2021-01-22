@@ -30,7 +30,7 @@ kotlin {
         val commonTest by getting
         val jvmMain by getting {
             dependencies {
-                implementation(project(":shared"))
+                implementation(project(":common:main"))
                 implementation("com.github.ajalt.clikt:clikt:3.0.1")
                 implementation("io.ktor:ktor-client-okhttp:1.4.1")
 //                implementation("com.google.lanterna:lanterna:3.0.4")
@@ -48,12 +48,3 @@ tasks.getByName<JavaExec>("run") {
     dependsOn(tasks.getByName<Jar>("jvmJar"))
     classpath(tasks.getByName<Jar>("jvmJar"))
 }
-
-//tasks {
-//    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
-//        mergeServiceFiles()
-//        manifest {
-//            attributes(mapOf("Main-Class" to "MainKt"))
-//        }
-//    }
-//}
