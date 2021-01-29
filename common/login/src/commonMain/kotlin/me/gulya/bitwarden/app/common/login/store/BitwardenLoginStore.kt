@@ -6,10 +6,10 @@ import me.gulya.bitwarden.app.common.login.store.BitwardenLoginStore.*
 interface BitwardenLoginStore : Store<Intent, State, Label> {
 
     sealed class Intent {
-        data class SetLogin(val login: String) : Intent()
-        data class SetPassword(val password: String) : Intent()
-        data class ChangeServerSettingsVisible(val visible: Boolean) : Intent()
-        data class ChangeServerAddress(val serverAddress: String) : Intent()
+        data class EmailChanged(val email: String) : Intent()
+        data class PasswordChanged(val password: String) : Intent()
+        data class CustomServerCheckedChanged(val checked: Boolean) : Intent()
+        data class CustomServerAddressChanged(val serverAddress: String) : Intent()
         object Login : Intent()
     }
 
@@ -18,7 +18,7 @@ interface BitwardenLoginStore : Store<Intent, State, Label> {
         val password: String,
         val serverConfig: ServerConfig,
         val loading: Boolean,
-        val error: String,
+        val error: String?,
     )
 
     sealed class ServerConfig {

@@ -1,4 +1,4 @@
-package me.gulya.bitwarden.app.desktop.ui.integration
+package me.gulya.bitwarden.app.desktop.root.integration
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.RouterState
@@ -9,15 +9,15 @@ import com.arkivanov.decompose.value.Value
 import com.badoo.reaktive.base.Consumer
 import me.gulya.bitwarden.app.common.login.BitwardenLogin
 import me.gulya.bitwarden.app.common.utils.Consumer
-import me.gulya.bitwarden.app.desktop.ui.BitwardenDesktopContentRoot
-import me.gulya.bitwarden.app.desktop.ui.BitwardenDesktopContentRoot.Child
-import me.gulya.bitwarden.app.desktop.ui.BitwardenDesktopContentRoot.Dependencies
+import me.gulya.bitwarden.app.desktop.root.BitwardenDesktopRoot
+import me.gulya.bitwarden.app.desktop.root.BitwardenDesktopRoot.Child
+import me.gulya.bitwarden.app.desktop.root.BitwardenDesktopRoot.Dependencies
 import me.gulya.bitwarden.domain.login.LoginInteractor
 
-internal class BitwardenDesktopContentRootImpl(
+internal class BitwardenDesktopRootImpl(
     componentContext: ComponentContext,
     dependencies: Dependencies
-) : BitwardenDesktopContentRoot, ComponentContext by componentContext, Dependencies by dependencies {
+) : BitwardenDesktopRoot, ComponentContext by componentContext, Dependencies by dependencies {
 
     private val router =
         router<Configuration, Child>(

@@ -90,11 +90,14 @@ sealed class EncryptedString {
                         }
                     encryptionType to payload
                 }
+
             if (payload.isEmpty()) {
                 throw IllegalArgumentException("Payload is empty!")
             }
+
             when (encryptionType) {
-                EncryptionType.AES_CBC128_HMAC_SHA256_BASE64, EncryptionType.AES_CBC256_HMAC_SHA256_BASE64 -> {
+                EncryptionType.AES_CBC128_HMAC_SHA256_BASE64,
+                EncryptionType.AES_CBC256_HMAC_SHA256_BASE64 -> {
                     if (payload.size == 3) {
                         return EncryptedString(
                             encryptionType = encryptionType,

@@ -4,5 +4,7 @@ include(
     ":desktopApp",
     ":common:main",
     ":common:utils",
-    ":common:login"
+    ":common:login",
+    ":common:desktop-main",
+    ":common:compose-ui"
 )

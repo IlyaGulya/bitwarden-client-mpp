@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform")
+    id("multiplatform-setup")
+    id("android-setup")
     kotlin("plugin.serialization") version "1.4.21-2"
-    id("org.jetbrains.compose")
 }
 
 repositories {
@@ -27,13 +27,6 @@ kotlin {
                 api("com.soywiz.korlibs.krypto:krypto:2.0.0-alpha")
                 api("com.github.aakira:napier:1.4.1")
                 implementation("com.squareup.okio:okio:2.9.0")
-
-                implementation("com.arkivanov.decompose:decompose:0.1.5")
-                implementation("com.arkivanov.decompose:extensions-compose-jetbrains:0.1.5")
-
-                api(compose.runtime)
-                api(compose.foundation)
-                api(compose.material)
             }
         }
         val commonTest by getting {

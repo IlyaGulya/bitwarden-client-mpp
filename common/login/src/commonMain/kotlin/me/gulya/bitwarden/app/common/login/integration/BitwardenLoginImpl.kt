@@ -16,10 +16,7 @@ class BitwardenLoginImpl(
 
     private val store = instanceKeeper.getStore {
         BitwardenLoginStoreProvider(
-            storeFactory = storeFactory,
-            loginInteractorFactory = dependencies.loginInteractorFactory,
-            mainContext = dependencies.mainContext,
-            ioContext = dependencies.ioContext,
+            dependencies = dependencies,
         ).provide()
     }
 
@@ -28,11 +25,33 @@ class BitwardenLoginImpl(
             BitwardenLogin.ViewModel(
                 email = email,
                 password = password,
-                customServerCheckboxEnabled = serverConfig is BitwardenLoginStore.ServerConfig.Custom,
+                customServerCheckboxChecked = serverConfig is BitwardenLoginStore.ServerConfig.Custom,
                 customServerAddressVisible = serverConfig is BitwardenLoginStore.ServerConfig.Custom,
                 customServerAddress = (serverConfig as? BitwardenLoginStore.ServerConfig.Custom)?.serverAddress ?: "",
+                loading = loading,
+                error = error,
             )
         }
+    }
+
+    override fun emailChanged(email: String) {
+        store.accept(BitwardenLoginStore.Intent.EmailChanged(email))
+    }
+
+    override fun passwordChanged(password: String) {
+        store.accept(BitwardenLoginStore.Intent.PasswordChanged(password))
+    }
+
+    override fun customServerAddressChanged(serverAddress: String) {
+        store.accept(BitwardenLoginStore.Intent.CustomServerAddressChanged(serverAddress))
+    }
+
+    override fun customServerCheckedChanged(checked: Boolean) {
+        store.accept(BitwardenLoginStore.Intent.CustomServerCheckedChanged(checked))
+    }
+
+    override fun loginButtonPressed() {
+        store.accept(BitwardenLoginStore.Intent.Login)
     }
 
 }

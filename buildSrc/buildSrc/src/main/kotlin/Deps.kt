@@ -65,6 +65,11 @@ object Deps {
         }
     }
 
+    object Ktor {
+        private const val VERSION = "1.4.1"
+        const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$VERSION"
+    }
+
     object Squareup {
         object SQLDelight {
             private const val VERSION = "1.4.4"

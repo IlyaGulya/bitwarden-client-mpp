@@ -12,12 +12,21 @@ interface BitwardenLogin {
 
     val state: Value<ViewModel>
 
+    fun emailChanged(email: String)
+    fun passwordChanged(password: String)
+    fun customServerAddressChanged(serverAddress: String)
+    fun customServerCheckedChanged(checked: Boolean)
+
+    fun loginButtonPressed()
+
     data class ViewModel(
         val email: String,
         val password: String,
-        val customServerCheckboxEnabled: Boolean,
+        val customServerCheckboxChecked: Boolean,
         val customServerAddressVisible: Boolean,
         val customServerAddress: String,
+        val loading: Boolean,
+        val error: String?,
     )
 
     interface Dependencies {

@@ -4,15 +4,15 @@ plugins {
 }
 
 kotlin {
-    jvm {
-    }
+    jvm()
 
     sourceSets {
-        val commonMain by getting {
+        val jvmMain by getting {
             dependencies {
                 implementation(project(":common:main"))
                 implementation(project(":common:login"))
                 implementation(project(":common:utils"))
+                implementation(project(":common:compose-ui"))
                 implementation(compose.desktop.currentOs)
                 implementation(Deps.ArkIvanov.Decompose.decompose)
                 implementation(Deps.ArkIvanov.Decompose.extensionsCompose)
@@ -20,9 +20,9 @@ kotlin {
                 implementation(Deps.ArkIvanov.MVIKotlin.mvikotlinMain)
                 implementation(Deps.Badoo.Reaktive.reaktive)
                 implementation(Deps.Badoo.Reaktive.coroutinesInterop)
+                implementation(Deps.Ktor.ktorClientOkHttp)
             }
         }
-        val jvmMain by getting
     }
 }
 

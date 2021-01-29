@@ -3,19 +3,15 @@ package me.gulya.bitwarden.app.common.login.store
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
-import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.SuspendExecutor
+import com.badoo.reaktive.base.invoke
 import kotlinx.coroutines.withContext
 import me.gulya.bitwarden.app.common.login.BitwardenLogin
 import me.gulya.bitwarden.app.common.login.store.BitwardenLoginStore.Intent.*
-import kotlin.coroutines.CoroutineContext
 
 internal class BitwardenLoginStoreProvider(
-    private val storeFactory: StoreFactory,
-    private val loginInteractorFactory: BitwardenLogin.LoginInteractorFactory,
-    private val mainContext: CoroutineContext,
-    private val ioContext: CoroutineContext,
-) {
+    private val dependencies: BitwardenLogin.Dependencies,
+) : BitwardenLogin.Dependencies by dependencies {
 
     private sealed class Result {
         data class EmailChanged(val email: String) : Result()
@@ -36,6 +32,7 @@ internal class BitwardenLoginStoreProvider(
                     password = "",
                     serverConfig = BitwardenLoginStore.ServerConfig.Default,
                     loading = false,
+                    error = null,
                 ),
                 bootstrapper = SimpleBootstrapper(Unit),
                 executorFactory = ::ExecutorImpl,
@@ -50,15 +47,15 @@ internal class BitwardenLoginStoreProvider(
             getState: () -> BitwardenLoginStore.State
         ) {
             when (intent) {
-                is SetLogin -> setLogin(intent.login)
-                is SetPassword -> setPassword(intent.password)
-                is ChangeServerSettingsVisible -> changeServerSettingsVisible(intent.visible)
-                is ChangeServerAddress -> changeServerAddress(intent.serverAddress)
+                is EmailChanged -> setEmail(intent.email)
+                is PasswordChanged -> setPassword(intent.password)
+                is CustomServerCheckedChanged -> changeCustomServerChecked(intent.checked)
+                is CustomServerAddressChanged -> changeCustomServerAddress(intent.serverAddress)
                 is Login -> login(getState())
             }
         }
 
-        private fun setLogin(login: String) {
+        private fun setEmail(login: String) {
             dispatch(Result.EmailChanged(login))
         }
 
@@ -66,9 +63,9 @@ internal class BitwardenLoginStoreProvider(
             dispatch(Result.PasswordChanged(password))
         }
 
-        private fun changeServerSettingsVisible(visible: Boolean) {
+        private fun changeCustomServerChecked(checked: Boolean) {
             dispatch(
-                if (visible) {
+                if (checked) {
                     Result.ServerConfigChanged(
                         BitwardenLoginStore.ServerConfig.Custom(
                             serverAddress = ""
@@ -80,7 +77,7 @@ internal class BitwardenLoginStoreProvider(
             )
         }
 
-        private fun changeServerAddress(serverAddress: String) {
+        private fun changeCustomServerAddress(serverAddress: String) {
             dispatch(
                 Result.ServerConfigChanged(
                     BitwardenLoginStore.ServerConfig.Custom(
@@ -113,7 +110,10 @@ internal class BitwardenLoginStoreProvider(
                     when {
                         result.twoFactor -> TODO("Two factor auth is not supported yet")
                         result.resetMasterPassword -> TODO("Master password reset is not supported yet")
-                        else -> dispatch(Result.LoginSuccessful)
+                        else -> {
+                            dispatch(Result.LoginSuccessful)
+                            loginOutput(BitwardenLogin.Output.Finished)
+                        }
                     }
                 } catch (error: Exception) {
                     dispatch(Result.LoginUnsuccessful(error))
@@ -129,7 +129,7 @@ internal class BitwardenLoginStoreProvider(
                 is Result.EmailChanged -> copy(email = result.email)
                 is Result.PasswordChanged -> copy(password = result.password)
                 is Result.ServerConfigChanged -> copy(serverConfig = result.serverConfig)
-                is Result.LoginStarted -> copy(loading = true)
+                is Result.LoginStarted -> copy(loading = true, error = null)
                 is Result.LoginSuccessful -> copy(loading = false)
                 is Result.LoginUnsuccessful -> copy(
                     loading = false,

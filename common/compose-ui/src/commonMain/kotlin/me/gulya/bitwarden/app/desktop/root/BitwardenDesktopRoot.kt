@@ -1,13 +1,14 @@
-package me.gulya.bitwarden.app.desktop.ui
+package me.gulya.bitwarden.app.desktop.root
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.RouterState
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.store.StoreFactory
+import me.gulya.bitwarden.app.common.desktop.main.BitwardenDesktopMain
 import me.gulya.bitwarden.app.common.login.BitwardenLogin
-import me.gulya.bitwarden.app.desktop.ui.integration.BitwardenDesktopContentRootImpl
+import me.gulya.bitwarden.app.desktop.root.integration.BitwardenDesktopRootImpl
 
-interface BitwardenDesktopContentRoot {
+interface BitwardenDesktopRoot {
 
     val routerState: Value<RouterState<*, Child>>
 
@@ -24,7 +25,7 @@ interface BitwardenDesktopContentRoot {
         operator fun invoke(
             componentContext: ComponentContext,
             dependencies: Dependencies
-        ): BitwardenDesktopContentRoot =
-            BitwardenDesktopContentRootImpl(componentContext, dependencies)
+        ): BitwardenDesktopRoot =
+            BitwardenDesktopRootImpl(componentContext, dependencies)
     }
 }

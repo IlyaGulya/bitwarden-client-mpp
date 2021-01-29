@@ -20,7 +20,7 @@ class MultiplatformConfigurationPlugin : Plugin<Project> {
         project.extensions.getByType(KotlinMultiplatformExtension::class).run {
             jvm("desktop")
             android()
-            ios()
+//            ios()
 
             sourceSets {
                 named("commonTest") {
