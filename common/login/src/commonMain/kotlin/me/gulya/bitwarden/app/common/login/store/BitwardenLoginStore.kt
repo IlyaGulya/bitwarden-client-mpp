@@ -18,6 +18,7 @@ interface BitwardenLoginStore : Store<Intent, State, Label> {
         val password: String,
         val serverConfig: ServerConfig,
         val loading: Boolean,
+        val error: String,
     )
 
     sealed class ServerConfig {

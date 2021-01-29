@@ -12,7 +12,7 @@ interface BitwardenDesktopContentRoot {
     val routerState: Value<RouterState<*, Child>>
 
     sealed class Child {
-        //        data class Main(val component: TodoMain) : Child()
+        data class Main(val component: BitwardenDesktopMain) : Child()
         data class Login(val component: BitwardenLogin) : Child()
     }
 

@@ -6,13 +6,13 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.SuspendExecutor
 import kotlinx.coroutines.withContext
+import me.gulya.bitwarden.app.common.login.BitwardenLogin
 import me.gulya.bitwarden.app.common.login.store.BitwardenLoginStore.Intent.*
-import me.gulya.bitwarden.domain.login.LoginInteractor
 import kotlin.coroutines.CoroutineContext
 
 internal class BitwardenLoginStoreProvider(
     private val storeFactory: StoreFactory,
-    private val loginInteractorFactory: (serverUrl: String) -> LoginInteractor,
+    private val loginInteractorFactory: BitwardenLogin.LoginInteractorFactory,
     private val mainContext: CoroutineContext,
     private val ioContext: CoroutineContext,
 ) {
@@ -21,6 +21,9 @@ internal class BitwardenLoginStoreProvider(
         data class EmailChanged(val email: String) : Result()
         data class PasswordChanged(val password: String) : Result()
         data class ServerConfigChanged(val serverConfig: BitwardenLoginStore.ServerConfig) : Result()
+        data class LoginUnsuccessful(val error: Exception) : Result()
+        object LoginStarted : Result()
+        object LoginSuccessful : Result()
     }
 
 
@@ -37,7 +40,7 @@ internal class BitwardenLoginStoreProvider(
                 bootstrapper = SimpleBootstrapper(Unit),
                 executorFactory = ::ExecutorImpl,
                 reducer = ReducerImpl,
-            )
+            ) {}
 
     private inner class ExecutorImpl :
         SuspendExecutor<BitwardenLoginStore.Intent, Unit, BitwardenLoginStore.State, Result, BitwardenLoginStore.Label>() {
@@ -95,14 +98,26 @@ internal class BitwardenLoginStoreProvider(
                         is BitwardenLoginStore.ServerConfig.Custom -> state.serverConfig.serverAddress
                     }
 
-                val loginInteractor = loginInteractorFactory(serverUrl)
-                val result =
-                    loginInteractor
-                        .login(
-                            email = state.email,
-                            masterPassword = state.password
-                        )
+                val loginInteractor = loginInteractorFactory.get(serverUrl)
 
+                dispatch(Result.LoginStarted)
+
+                try {
+                    val result =
+                        loginInteractor
+                            .login(
+                                email = state.email,
+                                masterPassword = state.password
+                            )
+
+                    when {
+                        result.twoFactor -> TODO("Two factor auth is not supported yet")
+                        result.resetMasterPassword -> TODO("Master password reset is not supported yet")
+                        else -> dispatch(Result.LoginSuccessful)
+                    }
+                } catch (error: Exception) {
+                    dispatch(Result.LoginUnsuccessful(error))
+                }
 
             }
         }
@@ -114,6 +129,12 @@ internal class BitwardenLoginStoreProvider(
                 is Result.EmailChanged -> copy(email = result.email)
                 is Result.PasswordChanged -> copy(password = result.password)
                 is Result.ServerConfigChanged -> copy(serverConfig = result.serverConfig)
+                is Result.LoginStarted -> copy(loading = true)
+                is Result.LoginSuccessful -> copy(loading = false)
+                is Result.LoginUnsuccessful -> copy(
+                    loading = false,
+                    error = result.error.message.toString(),
+                )
             }
     }
 

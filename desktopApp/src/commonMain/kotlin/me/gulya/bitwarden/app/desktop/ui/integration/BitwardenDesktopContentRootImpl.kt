@@ -8,6 +8,7 @@ import com.arkivanov.decompose.statekeeper.Parcelize
 import com.arkivanov.decompose.value.Value
 import com.badoo.reaktive.base.Consumer
 import me.gulya.bitwarden.app.common.login.BitwardenLogin
+import me.gulya.bitwarden.app.common.utils.Consumer
 import me.gulya.bitwarden.app.desktop.ui.BitwardenDesktopContentRoot
 import me.gulya.bitwarden.app.desktop.ui.BitwardenDesktopContentRoot.Child
 import me.gulya.bitwarden.app.desktop.ui.BitwardenDesktopContentRoot.Dependencies
@@ -29,6 +30,7 @@ internal class BitwardenDesktopContentRootImpl(
 
     private fun createChild(configuration: Configuration, componentContext: ComponentContext): Child =
         when (configuration) {
+            is Configuration.Login -> Child.Login(login(componentContext))
             is Configuration.Main -> Child.Login(login(componentContext))
 //            is Configuration.Edit -> Child.Edit(todoEdit(componentContext, itemId = configuration.itemId))
         }
@@ -37,10 +39,9 @@ internal class BitwardenDesktopContentRootImpl(
         BitwardenLogin(
             componentContext = componentContext,
             dependencies = object : BitwardenLogin.Dependencies, Dependencies by this {
-                override val loginInteractor: LoginInteractor
+                override val loginInteractorFactory: (serverUrl) -> LoginInteractor
                     get() = TODO("Not yet implemented")
-                override val loginOutput: Consumer<BitwardenLogin.Output>
-                    get() = TODO("Not yet implemented")
+                override val loginOutput: Consumer<BitwardenLogin.Output> = Consumer(::onLoginOutput)
             }
         )
 
@@ -55,7 +56,7 @@ internal class BitwardenDesktopContentRootImpl(
 
     private fun onLoginOutput(output: BitwardenLogin.Output): Unit =
         when (output) {
-            is TodoMain.Output.Selected -> router.push(Configuration.Edit(itemId = output.id))
+            is BitwardenLogin.Output.Finished -> router.push(Configuration.Edit(itemId = output.id))
         }
 
     private fun onEditOutput(output: TodoEdit.Output): Unit =
@@ -68,6 +69,6 @@ internal class BitwardenDesktopContentRootImpl(
         object Main : Configuration()
 
         @Parcelize
-        data class Edit(val itemId: Long) : Configuration()
+        object Login : Configuration()
     }
 }

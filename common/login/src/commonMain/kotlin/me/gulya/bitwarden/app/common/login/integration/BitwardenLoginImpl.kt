@@ -17,6 +17,9 @@ class BitwardenLoginImpl(
     private val store = instanceKeeper.getStore {
         BitwardenLoginStoreProvider(
             storeFactory = storeFactory,
+            loginInteractorFactory = dependencies.loginInteractorFactory,
+            mainContext = dependencies.mainContext,
+            ioContext = dependencies.ioContext,
         ).provide()
     }
 
