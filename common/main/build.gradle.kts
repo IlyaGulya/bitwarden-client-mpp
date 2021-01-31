@@ -15,7 +15,6 @@ repositories {
 }
 
 kotlin {
-    jvm {}
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -35,12 +34,17 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val jvmMain by getting {
+        val jvmMain by creating {
+            dependsOn(commonMain)
             dependencies {
                 api("org.bouncycastle:bcprov-jdk15to18:1.66")
             }
         }
-        val jvmTest by getting
+        val androidMain by getting { dependsOn(jvmMain) }
+        val desktopMain by getting { dependsOn(jvmMain) }
+        val jvmTest by creating {
+            dependsOn(commonTest)
+        }
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
         }
