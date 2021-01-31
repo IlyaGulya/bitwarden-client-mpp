@@ -1,5 +1,6 @@
 package me.gulya.bitwarden.app.desktop.ui
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.runtime.Composable
 
 fun <T, K> crossfade(): @Composable (currentChild: T, currentKey: K, children: @Composable (T, K) -> Unit) -> Unit =
@@ -9,7 +10,7 @@ fun <T, K> crossfade(): @Composable (currentChild: T, currentKey: K, children: @
 
 @Composable
 private fun <T, K> KeyedCrossfade(currentChild: T, currentKey: K, children: @Composable (T, K) -> Unit) {
-    androidx.compose.animation.Crossfade(current = ChildWrapper(currentChild, currentKey)) {
+    Crossfade(targetState = ChildWrapper(currentChild, currentKey)) {
         children(it.child, it.key)
     }
 }

@@ -19,7 +19,7 @@ buildscript {
     dependencies {
         classpath(Deps.JetBrains.Compose.gradlePlugin)
         classpath(Deps.JetBrains.Kotlin.kotlinGradlePlugin)
-        classpath(Deps.JetBrains.Kotlin.kotlinSerializationGradlePlugin)
+        classpath(Deps.JetBrains.Kotlin.Serialization.gradlePlugin)
         classpath(Deps.Android.Tools.Build.gradlePlugin)
     }
 }

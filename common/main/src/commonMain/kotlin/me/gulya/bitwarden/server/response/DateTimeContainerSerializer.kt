@@ -19,7 +19,7 @@ data class DateTimeContainer(
 }
 
 @Serializer(forClass = DateTimeContainer::class)
-class DateTimeContainerSerializer : KSerializer<DateTimeContainer> {
+object DateTimeContainerSerializer : KSerializer<DateTimeContainer> {
     private val formats = listOf(
         "yyyy-MM-dd'T'HH:mm:ss.SSZ",
         "yyyy-MM-dd'T'HH:mm:ss.SSSZ",

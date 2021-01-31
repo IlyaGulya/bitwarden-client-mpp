@@ -7,6 +7,8 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import me.gulya.bitwarden.app.common.desktop.main.BitwardenDesktopMain
 import me.gulya.bitwarden.app.common.login.BitwardenLogin
 import me.gulya.bitwarden.app.desktop.root.integration.BitwardenDesktopRootImpl
+import me.gulya.bitwarden.sdk.BitwardenSdk
+import kotlin.coroutines.CoroutineContext
 
 interface BitwardenDesktopRoot {
 
@@ -19,6 +21,9 @@ interface BitwardenDesktopRoot {
 
     interface Dependencies {
         val storeFactory: StoreFactory
+        val sdk: BitwardenSdk
+        val mainContext: CoroutineContext
+        val ioContext: CoroutineContext
     }
 
     companion object {

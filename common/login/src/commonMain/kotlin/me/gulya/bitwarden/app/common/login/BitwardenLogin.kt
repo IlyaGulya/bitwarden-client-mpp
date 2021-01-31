@@ -3,9 +3,9 @@ package me.gulya.bitwarden.app.common.login
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.store.StoreFactory
-import com.badoo.reaktive.base.Consumer
 import me.gulya.bitwarden.app.common.login.integration.BitwardenLoginImpl
-import me.gulya.bitwarden.domain.login.LoginInteractor
+import me.gulya.bitwarden.app.common.utils.Consumer
+import me.gulya.bitwarden.sdk.BitwardenSdk
 import kotlin.coroutines.CoroutineContext
 
 interface BitwardenLogin {
@@ -31,14 +31,10 @@ interface BitwardenLogin {
 
     interface Dependencies {
         val storeFactory: StoreFactory
-        val loginInteractorFactory: LoginInteractorFactory
+        val sdk: BitwardenSdk
         val loginOutput: Consumer<Output>
         val mainContext: CoroutineContext
         val ioContext: CoroutineContext
-    }
-
-    fun interface LoginInteractorFactory {
-        fun get(serverUrl: String): LoginInteractor
     }
 
     sealed class Output {

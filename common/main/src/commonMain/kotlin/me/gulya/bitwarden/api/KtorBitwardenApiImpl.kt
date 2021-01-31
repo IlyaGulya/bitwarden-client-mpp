@@ -13,7 +13,7 @@ import me.gulya.bitwarden.server.response.*
 
 class KtorBitwardenApiImpl(
     private val client: HttpClient,
-    private val endpointUrl: String,
+    private val endpointUrlHolder: EndpointUrlHolder,
     private val tokenInteractor: TokenInteractor,
 ) : BitwardenApi {
 
@@ -24,7 +24,7 @@ class KtorBitwardenApiImpl(
             } else {
                 "/$path"
             }
-        return "$endpointUrl$realPath"
+        return "${endpointUrlHolder.getEndpointUrl()}$realPath"
     }
 
     private fun makeApiUrl(path: String) = makeUrl("/api$path")

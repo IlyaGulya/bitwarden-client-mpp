@@ -34,6 +34,6 @@ enum class DeviceType(
     }
 }
 
-class DeviceTypeSerializer : ByteEnumTypeSerializer<DeviceType>(
+object DeviceTypeSerializer : ByteEnumTypeSerializer<DeviceType>(
     valueFactory = DeviceType.Companion::forValue
 )

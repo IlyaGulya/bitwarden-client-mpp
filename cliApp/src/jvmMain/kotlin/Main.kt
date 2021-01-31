@@ -9,7 +9,7 @@ class BitwardenCli : CliktCommand() {
     override fun run() {
         val endpointUrl = System.getenv("ENDPOINT_URL") ?: prompt(
             text = "Enter endpoint URL (empty for https://vault.bitwarden.com)"
-        ) ?: "https://valut.bitwarden.com"
+        ) ?: "https://vault.bitwarden.com"
         val email = System.getenv("EMAIL") ?: prompt(
             text = "Enter email"
         )
@@ -25,9 +25,10 @@ class BitwardenCli : CliktCommand() {
             throw IllegalArgumentException("Please enter password")
         }
 
-        val sdk = BitwardenSdk(OkHttp, endpointUrl)
+        val sdk = BitwardenSdk(OkHttp)
 
         runBlocking {
+            sdk.getEndpointUrlHolder().setEndpointUrl(endpointUrl)
             sdk.login(email, password)
 
             sdk.syncAndDecryptCiphers().forEach {

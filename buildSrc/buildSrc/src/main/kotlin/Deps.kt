@@ -3,9 +3,16 @@ object Deps {
     object JetBrains {
         object Kotlin {
             // __KOTLIN_COMPOSE_VERSION__
-            const val VERSION = "1.4.21-2"
+            private const val VERSION = "1.4.21-2"
             const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$VERSION"
-            const val kotlinSerializationGradlePlugin = "org.jetbrains.kotlin:kotlin-serialization:$VERSION"
+
+            object Serialization {
+                private const val VERSION_RUNTIME = "1.0.0"
+
+                const val gradlePlugin = "org.jetbrains.kotlin:kotlin-serialization:$VERSION"
+                const val runtime = "org.jetbrains.kotlinx:kotlinx-serialization-json:$VERSION_RUNTIME"
+            }
+
             const val testCommon = "org.jetbrains.kotlin:kotlin-test-common:$VERSION"
             const val testJunit = "org.jetbrains.kotlin:kotlin-test-junit:$VERSION"
             const val testAnnotationsCommon = "org.jetbrains.kotlin:kotlin-test-annotations-common:$VERSION"
@@ -67,7 +74,44 @@ object Deps {
 
     object Ktor {
         private const val VERSION = "1.4.1"
-        const val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:$VERSION"
+
+        object Client {
+            const val okHttp = "io.ktor:ktor-client-okhttp:$VERSION"
+            const val core = "io.ktor:ktor-client-core:$VERSION"
+            const val serialization = "io.ktor:ktor-client-serialization:$VERSION"
+            const val logging = "io.ktor:ktor-client-logging:$VERSION"
+        }
+    }
+
+    object Klock {
+        private const val VERSION = "1.12.1"
+        const val klock = "com.soywiz.korlibs.klock:klock:$VERSION"
+    }
+
+    object Krypto {
+        private const val VERSION = "2.0.0-alpha"
+        const val krypto = "com.soywiz.korlibs.krypto:krypto:$VERSION"
+    }
+
+    object Napier {
+        private const val VERSION = "1.4.1"
+        const val napier = "com.github.aakira:napier:$VERSION"
+    }
+
+    object Okio {
+        private const val VERSION = "2.9.0"
+        const val okio = "com.squareup.okio:okio:$VERSION"
+    }
+
+    object BouncyCastle {
+        private const val VERSION = "1.66"
+        const val jdk15to18provider = "org.bouncycastle:bcprov-jdk15to18:$VERSION"
+    }
+
+    object MultiplatformSettings {
+        private const val VERSION = "0.7.1"
+        const val settings = "com.russhwolf:multiplatform-settings:$VERSION"
+        const val settingsNoArg = "com.russhwolf:multiplatform-settings-no-arg:$VERSION"
     }
 
     object Squareup {

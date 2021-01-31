@@ -18,14 +18,17 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
-                api("com.soywiz.korlibs.klock:klock:1.12.1")
-                api("io.ktor:ktor-client-core:1.4.1")
-                api("io.ktor:ktor-client-serialization:1.4.1")
-                api("io.ktor:ktor-client-logging:1.4.1")
-                api("com.soywiz.korlibs.krypto:krypto:2.0.0-alpha")
-                api("com.github.aakira:napier:1.4.1")
-                implementation("com.squareup.okio:okio:2.9.0")
+                api(Deps.JetBrains.Kotlin.Serialization.runtime)
+                api(Deps.Klock.klock)
+                api(Deps.Ktor.Client.core)
+                api(Deps.Ktor.Client.serialization)
+                api(Deps.Ktor.Client.logging)
+                api(Deps.Krypto.krypto)
+                api(Deps.Napier.napier)
+                api(Deps.Badoo.Reaktive.reaktive)
+                api(Deps.MultiplatformSettings.settings)
+                api(Deps.MultiplatformSettings.settingsNoArg)
+                implementation(Deps.Okio.okio)
             }
         }
         val commonTest by getting {
@@ -37,7 +40,7 @@ kotlin {
         val jvmMain by creating {
             dependsOn(commonMain)
             dependencies {
-                api("org.bouncycastle:bcprov-jdk15to18:1.66")
+                api(Deps.BouncyCastle.jdk15to18provider)
             }
         }
         val androidMain by getting { dependsOn(jvmMain) }

@@ -4,7 +4,6 @@ import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.extensions.coroutines.SuspendExecutor
-import com.badoo.reaktive.base.invoke
 import kotlinx.coroutines.withContext
 import me.gulya.bitwarden.app.common.login.BitwardenLogin
 import me.gulya.bitwarden.app.common.login.store.BitwardenLoginStore.Intent.*
@@ -41,6 +40,22 @@ internal class BitwardenLoginStoreProvider(
 
     private inner class ExecutorImpl :
         SuspendExecutor<BitwardenLoginStore.Intent, Unit, BitwardenLoginStore.State, Result, BitwardenLoginStore.Label>() {
+
+        override suspend fun executeAction(action: Unit, getState: () -> BitwardenLoginStore.State) {
+            val endpointUrlHolder = sdk.getEndpointUrlHolder()
+            val endpointIsDefault = endpointUrlHolder.isEndpointUrlDefault()
+            dispatch(
+                Result.ServerConfigChanged(
+                    if (endpointIsDefault) {
+                        BitwardenLoginStore.ServerConfig.Default
+                    } else {
+                        BitwardenLoginStore.ServerConfig.Custom(
+                            serverAddress = endpointUrlHolder.getEndpointUrl(),
+                        )
+                    }
+                )
+            )
+        }
 
         override suspend fun executeIntent(
             intent: BitwardenLoginStore.Intent,
@@ -95,16 +110,16 @@ internal class BitwardenLoginStoreProvider(
                         is BitwardenLoginStore.ServerConfig.Custom -> state.serverConfig.serverAddress
                     }
 
-                val loginInteractor = loginInteractorFactory.get(serverUrl)
+                sdk.getEndpointUrlHolder().setEndpointUrl(serverUrl)
 
                 dispatch(Result.LoginStarted)
 
                 try {
                     val result =
-                        loginInteractor
+                        sdk
                             .login(
                                 email = state.email,
-                                masterPassword = state.password
+                                password = state.password
                             )
 
                     when {

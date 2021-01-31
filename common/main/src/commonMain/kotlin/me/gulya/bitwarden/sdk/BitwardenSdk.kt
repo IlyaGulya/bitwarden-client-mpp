@@ -1,6 +1,7 @@
 package me.gulya.bitwarden.sdk
 
 import com.github.aakira.napier.Napier
+import com.russhwolf.settings.Settings
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.features.json.*
@@ -8,7 +9,9 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import kotlinx.serialization.json.Json
 import me.gulya.bitwarden.api.BitwardenApi
+import me.gulya.bitwarden.api.EndpointUrlHolder
 import me.gulya.bitwarden.api.KtorBitwardenApiImpl
+import me.gulya.bitwarden.api.SettingsEndpointUrlHolder
 import me.gulya.bitwarden.crypto.*
 import me.gulya.bitwarden.data.CipherData
 import me.gulya.bitwarden.domain.data.AuthResult
@@ -19,7 +22,6 @@ import me.gulya.bitwarden.server.response.SyncResponse
 
 class BitwardenSdk(
     httpClientEngineFactory: HttpClientEngineFactory<*>,
-    endpointUrl: String,
 ) {
 
     private val json = Json {
@@ -52,7 +54,10 @@ class BitwardenSdk(
 
     private val tokenInteractor = TokenInteractor(json, tokenStorage)
 
-    private val api: BitwardenApi = KtorBitwardenApiImpl(client, endpointUrl, tokenInteractor)
+    private val settings = Settings()
+    private val endpointUrlHolder: EndpointUrlHolder = SettingsEndpointUrlHolder(settings)
+
+    private val api: BitwardenApi = KtorBitwardenApiImpl(client, endpointUrlHolder, tokenInteractor)
 
     private val loginInteractor = LoginInteractor(
         crypto = crypto,
@@ -82,6 +87,8 @@ class BitwardenSdk(
     private val collectionDecryptor = CollectionDecryptor(encryptionInteractor)
 
     private val keyInteractor = KeyInteractor(keyStorage, crypto)
+
+    fun getEndpointUrlHolder() = endpointUrlHolder
 
     suspend fun login(email: String, password: String): AuthResult {
         return loginInteractor.login(email = email, masterPassword = password)
