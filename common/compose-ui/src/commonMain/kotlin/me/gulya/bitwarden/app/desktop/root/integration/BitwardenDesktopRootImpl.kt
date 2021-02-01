@@ -21,7 +21,7 @@ internal class BitwardenDesktopRootImpl(
 
     private val router =
         router<Configuration, Child>(
-            initialConfiguration = Configuration.Main,
+            initialConfiguration = Configuration.Login,
             handleBackButton = true,
             componentFactory = ::createChild
         )
