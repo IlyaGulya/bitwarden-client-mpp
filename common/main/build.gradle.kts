@@ -25,7 +25,6 @@ kotlin {
                 api(Deps.Ktor.Client.logging)
                 api(Deps.Krypto.krypto)
                 api(Deps.Napier.napier)
-                api(Deps.Badoo.Reaktive.reaktive)
                 api(Deps.MultiplatformSettings.settings)
                 api(Deps.MultiplatformSettings.settingsNoArg)
                 implementation(Deps.Okio.okio)

@@ -7,7 +7,7 @@ object Deps {
             const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$VERSION"
 
             object Serialization {
-                private const val VERSION_RUNTIME = "1.0.0"
+                private const val VERSION_RUNTIME = "1.0.1"
 
                 const val gradlePlugin = "org.jetbrains.kotlin:kotlin-serialization:$VERSION"
                 const val runtime = "org.jetbrains.kotlinx:kotlinx-serialization-json:$VERSION_RUNTIME"
@@ -54,7 +54,7 @@ object Deps {
         }
 
         object Decompose {
-            private const val VERSION = "0.1.5"
+            private const val VERSION = "0.1.7"
             const val decompose = "com.arkivanov.decompose:decompose:$VERSION"
             const val decomposeIosX64 = "com.arkivanov.decompose:decompose-iosx64:$VERSION"
             const val decomposeIosArm64 = "com.arkivanov.decompose:decompose-iosarm64:$VERSION"

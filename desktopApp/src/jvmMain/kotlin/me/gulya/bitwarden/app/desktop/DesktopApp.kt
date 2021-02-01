@@ -11,8 +11,6 @@ import com.arkivanov.decompose.extensions.compose.jetbrains.rootComponent
 import com.arkivanov.decompose.lifecycle.LifecycleRegistry
 import com.arkivanov.decompose.lifecycle.resume
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
-import com.badoo.reaktive.coroutinesinterop.asScheduler
-import com.badoo.reaktive.scheduler.overrideSchedulers
 import io.ktor.client.engine.okhttp.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +21,6 @@ import kotlin.coroutines.CoroutineContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun main() {
-    overrideSchedulers(main = Dispatchers.Main::asScheduler)
     val lifecycle = LifecycleRegistry()
     lifecycle.resume()
 

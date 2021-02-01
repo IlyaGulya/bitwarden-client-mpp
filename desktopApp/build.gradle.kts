@@ -18,8 +18,6 @@ kotlin {
                 implementation(Deps.ArkIvanov.Decompose.extensionsCompose)
                 implementation(Deps.ArkIvanov.MVIKotlin.mvikotlin)
                 implementation(Deps.ArkIvanov.MVIKotlin.mvikotlinMain)
-                implementation(Deps.Badoo.Reaktive.reaktive)
-                implementation(Deps.Badoo.Reaktive.coroutinesInterop)
                 implementation(Deps.Ktor.Client.okHttp)
             }
         }
