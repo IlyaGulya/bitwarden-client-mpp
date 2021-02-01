@@ -1,9 +1,13 @@
 import com.github.ajalt.clikt.core.CliktCommand
+import com.russhwolf.settings.ExperimentalSettingsImplementation
+import com.russhwolf.settings.JvmPreferencesSettings
 import io.ktor.client.engine.okhttp.*
 import kotlinx.coroutines.runBlocking
 import me.gulya.bitwarden.sdk.BitwardenSdk
+import java.util.prefs.Preferences
 import kotlin.system.exitProcess
 
+@OptIn(ExperimentalSettingsImplementation::class)
 class BitwardenCli : CliktCommand() {
 
     override fun run() {
@@ -25,7 +29,8 @@ class BitwardenCli : CliktCommand() {
             throw IllegalArgumentException("Please enter password")
         }
 
-        val sdk = BitwardenSdk(OkHttp)
+        val settings = JvmPreferencesSettings(Preferences.userNodeForPackage(BitwardenCli::class.java))
+        val sdk = BitwardenSdk(OkHttp, settings)
 
         runBlocking {
             sdk.getEndpointUrlHolder().setEndpointUrl(endpointUrl)

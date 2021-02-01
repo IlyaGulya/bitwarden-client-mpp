@@ -22,6 +22,7 @@ import me.gulya.bitwarden.server.response.SyncResponse
 
 class BitwardenSdk(
     httpClientEngineFactory: HttpClientEngineFactory<*>,
+    private val settings: Settings,
 ) {
 
     private val json = Json {
@@ -49,12 +50,11 @@ class BitwardenSdk(
     private val cryptoFunctions: CryptoFunctions = CryptoFunctionsImpl(cryptoPrimitives)
     private val crypto: Crypto = CryptoImpl(cryptoFunctions)
 
-    private val keyStorage = InMemoryKeyStorage()
-    private val tokenStorage = InMemoryTokenStorage()
+    private val keyStorage = SettingsKeyStorage(settings, json)
+    private val tokenStorage = SettingsTokenStorage(settings)
 
     private val tokenInteractor = TokenInteractor(json, tokenStorage)
 
-    private val settings = Settings()
     private val endpointUrlHolder: EndpointUrlHolder = SettingsEndpointUrlHolder(settings)
 
     private val api: BitwardenApi = KtorBitwardenApiImpl(client, endpointUrlHolder, tokenInteractor)
@@ -120,6 +120,10 @@ class BitwardenSdk(
             Napier.e("Key is null. Unable to decrypt ciphers.")
             return emptyList()
         }
+    }
+
+    fun isLoggedIn(): Boolean {
+        return tokenStorage.getAccessToken() != null && tokenStorage.getRefreshToken() != null
     }
 
 }

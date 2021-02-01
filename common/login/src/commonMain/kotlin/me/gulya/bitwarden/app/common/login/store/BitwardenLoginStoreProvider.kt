@@ -42,19 +42,23 @@ internal class BitwardenLoginStoreProvider(
         SuspendExecutor<BitwardenLoginStore.Intent, Unit, BitwardenLoginStore.State, Result, BitwardenLoginStore.Label>() {
 
         override suspend fun executeAction(action: Unit, getState: () -> BitwardenLoginStore.State) {
-            val endpointUrlHolder = sdk.getEndpointUrlHolder()
-            val endpointIsDefault = endpointUrlHolder.isEndpointUrlDefault()
-            dispatch(
-                Result.ServerConfigChanged(
-                    if (endpointIsDefault) {
-                        BitwardenLoginStore.ServerConfig.Default
-                    } else {
-                        BitwardenLoginStore.ServerConfig.Custom(
-                            serverAddress = endpointUrlHolder.getEndpointUrl(),
-                        )
-                    }
+            if (sdk.isLoggedIn()) {
+                loginOutput(BitwardenLogin.Output.Finished)
+            } else {
+                val endpointUrlHolder = sdk.getEndpointUrlHolder()
+                val endpointIsDefault = endpointUrlHolder.isEndpointUrlDefault()
+                dispatch(
+                    Result.ServerConfigChanged(
+                        if (endpointIsDefault) {
+                            BitwardenLoginStore.ServerConfig.Default
+                        } else {
+                            BitwardenLoginStore.ServerConfig.Custom(
+                                serverAddress = endpointUrlHolder.getEndpointUrl(),
+                            )
+                        }
+                    )
                 )
-            )
+            }
         }
 
         override suspend fun executeIntent(
@@ -106,7 +110,7 @@ internal class BitwardenLoginStoreProvider(
             withContext(ioContext) {
                 val serverUrl =
                     when (state.serverConfig) {
-                        is BitwardenLoginStore.ServerConfig.Default -> "https://valut.bitwarden.com"
+                        is BitwardenLoginStore.ServerConfig.Default -> "https://vault.bitwarden.com"
                         is BitwardenLoginStore.ServerConfig.Custom -> state.serverConfig.serverAddress
                     }
 
